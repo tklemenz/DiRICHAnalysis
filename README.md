@@ -1,3 +1,8 @@
+# Introduction
+Analysis framework for the DiRICH based read-out to be used with the RadMap modules as a trigger for the Photon-THGEM detector.
+Repository is initially forked from the RadMapAnalysis by tklemenz, which is designed to work with a Padiwa based read-out system and will be modified.
+
+
 # Install guide
 
 ## Prerequisites
@@ -15,7 +20,7 @@
 ## Installation
 
 1. Go to your favorite destination
-2. `git clone https://github.com/tklemenz/RadMapAnalysis`
+2. `git clone https://github.com/bulukutlu/DiRICHAnalysis`
 3. install fmt (https://fmt.dev/latest/usage.html up to installing the library)
 4. install boost (https://www.boost.org/doc/libs/1_55_0/doc/html/bbv2/installation.html)
 5. source your `thisroot.sh`
@@ -31,7 +36,7 @@ When you want to open a root file containing objects from the framework you need
 The easiest way I found for now is to create an alias in your `~/.bashrc` where the library is loaded when you call `root`.
 It could look something like this:
 
-`alias radROOT='root -l -e "gSystem->Load(\"/path/to/RadMapAnalysis/build/libRadMapAna.so\");"'`
+`alias radROOT='root -l -e "gSystem->Load(\"/path/to/DiRICHAnalysis/build/libRadMapAna.so\");"'`
 
 Then you can simply call `radROOT` and the objects from the framework are known to root.
 
@@ -39,9 +44,9 @@ Then you can simply call `radROOT` and the objects from the framework are known 
 
 The doxygen documentation has just started and is not complete by any means!
 
-Go to the root folder of the project (should be `/path/to/RadMapAnalysis`) and run `doxygen doxygen.conf`. This needs to be done whenever you made changes to the documentation and want to update the doxygen files.
+Go to the root folder of the project (should be `/path/to/DiRICHAnalysis`) and run `doxygen doxygen.conf`. This needs to be done whenever you made changes to the documentation and want to update the doxygen files.
 
-Then open your browser (firefox works well in this case) and put `/path/to/RadMapAnalysis/doxygen/html/index.html` in the URL line. One of the most useful things is the TODO list. Things can be added by putting `/// @todo This needs to be done.` in the corresponding file. But appart from that it is also pretty useful for general documentation.
+Then open your browser (firefox works well in this case) and put `/path/to/DiRICHAnalysis/doxygen/html/index.html` in the URL line. One of the most useful things is the TODO list. Things can be added by putting `/// @todo This needs to be done.` in the corresponding file. But appart from that it is also pretty useful for general documentation.
 
 
 
