@@ -8,6 +8,7 @@ Repository is initially forked from the RadMapAnalysis by tklemenz, which is des
 ## Prerequisites
 
 * root
+I recommend installing root from source as described in https://root.cern/install/#build-from-source
 * cmake
 * fmt
 * boost
