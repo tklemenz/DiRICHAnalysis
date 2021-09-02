@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 project(DiRICHAnalysis)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH $ENV{ROOTSYS}/etc/cmake)

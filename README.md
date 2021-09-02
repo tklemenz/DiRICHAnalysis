@@ -7,11 +7,9 @@ Repository is initially forked from the RadMapAnalysis by tklemenz, which is des
 
 ## Prerequisites
 
-* root
+* root (version 6.22.02)
 I recommend installing root from source as described in https://root.cern/install/#build-from-source
 * cmake
-* fmt
-* boost
 
 ### Recommended
 
@@ -22,11 +20,9 @@ I recommend installing root from source as described in https://root.cern/instal
 
 1. Go to your favorite destination
 2. `git clone https://github.com/bulukutlu/DiRICHAnalysis`
-3. install fmt (https://fmt.dev/latest/usage.html up to installing the library)
-4. install boost (https://www.boost.org/doc/libs/1_55_0/doc/html/bbv2/installation.html)
-5. source your `thisroot.sh`
-6. `source RadMapAnalysis/compile.sh`
-7. It's that easy
+3. source your `thisroot.sh`
+4. `source RadMapAnalysis/compile.sh`
+5. It's that easy
 
 # How to use it
 
