@@ -23,11 +23,17 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_D
 set(SRCS
    src/Dummy.cxx
    )
-
+set(SRCS
+    src/Utility.cxx
+   )
+   
 set(HEADERS
    include/Dummy.h
    )
-
+set(HEADERS
+   include/Utility.h
+   )
+   
 ROOT_GENERATE_DICTIONARY(G__RMA ${HEADERS} LINKDEF include/LinkDef.h)
 add_library(DiRICHAna SHARED ${SRCS} G__RMA)
 target_link_libraries(DiRICHAna ${ROOT_LIBRARIES})
