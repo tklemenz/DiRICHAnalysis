@@ -22,18 +22,38 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_D
 
 set(SRCS
    src/Dummy.cxx
+   src/Signal.cxx
+   src/Fiber.cxx
+   src/EventBase.cxx
+   src/CTSEvent.cxx
+   src/Module.cxx
+   src/Utility.cxx
+   src/Constants.cxx
+   src/Cluster.cxx
+   src/CTSEventClusters.cxx
+   src/Track.cxx
+   src/Tracker.cxx
+   src/Clusterer.cxx
+   src/ClusterEvent.cxx
    )
-set(SRCS
-    src/Utility.cxx
-   )
-   
+
 set(HEADERS
    include/Dummy.h
-   )
-set(HEADERS
+   include/Signal.h
+   include/Fiber.h
+   include/EventBase.h
+   include/CTSEvent.h
+   include/Module.h
    include/Utility.h
+   include/Constants.h
+   include/Cluster.h
+   include/CTSEventClusters.h
+   include/Track.h
+   include/Tracker.h
+   include/Clusterer.h
+   include/ClusterEvent.h
    )
-   
+
 ROOT_GENERATE_DICTIONARY(G__RMA ${HEADERS} LINKDEF include/LinkDef.h)
 add_library(DiRICHAna SHARED ${SRCS} G__RMA)
 target_link_libraries(DiRICHAna ${ROOT_LIBRARIES})
@@ -46,10 +66,16 @@ target_link_libraries(DiRICHAna ${ROOT_LIBRARIES})
 
 set(EXE_SRCS
     macros/runDummy.C
+    macros/convertToCTSEvents.C
+    macros/plotCTSEvents.C
+    macros/convertToCTSEventsCluster.C
     )
 
 set(EXE_NAMES
     runDummy
+    convertToCTSEvents
+    plotCTSEvents
+    convertToCTSEventsCluster
     )
 
 list(LENGTH EXE_SRCS count)

@@ -66,58 +66,58 @@ Int_t getFiberNr(UInt_t configuration, UInt_t chID, UInt_t tdcID)
   if (chID == 0) { return 0; }
   switch (configuration) {
     case 0:
-      \\\first module
+      ///first module
       if (tdcID == 11){
-		 if (chID<=16) { return even0(chID); }
-		 else { return even1(chID);}
-	  }
-	  else if (tdcID ==9){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  } 
-	  else if (tdcID ==7){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  }   
-	  else if (tdcID ==5){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  }   
-	  else if (tdcID ==10){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}  
-	   }
-	  else if (tdcID ==8){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }  	   
-	  else if (tdcID ==6){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}  
-	   }
-	  else if (tdcID ==4){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }  	  
-	  \\\second module 
-	  else if (tdcID ==3){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  }   
-	  else if (tdcID ==1){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  }    
-	   else if (tdcID ==2){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}  
-	   }
-	  else if (tdcID ==0){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }  	  		
-		  
-		   	 
+        if (chID<=16) { return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==9){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==7){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==5){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==10){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}  
+       }
+      else if (tdcID ==8){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+      else if (tdcID ==6){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}  
+      }
+      else if (tdcID ==4){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+
+      ///second module 
+      else if (tdcID ==3){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==1){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+       else if (tdcID ==2){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}  
+       }
+      else if (tdcID ==0){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+
       else {
         printf("Wrong TDCID specified!\n");
         return -1;
@@ -125,57 +125,68 @@ Int_t getFiberNr(UInt_t configuration, UInt_t chID, UInt_t tdcID)
       break;
 
     case 1:
-    \\\first module
-     if (tdcID == 11){
-		 if (chID<=16) { return even0(chID); }
-		 else { return even1(chID);}
-	  }
-	  else if (tdcID ==9){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  } 
-	  else if (tdcID ==7){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  }   
-	  else if (tdcID ==5){
-		  if (chID<=16) {return even0(chId); }
-		  else { return even1(chID);}
-	  }   
-	  else if (tdcID ==10){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}  
-	   }
-	  else if (tdcID ==8){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }  	   
-	  else if (tdcID ==6){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}  
-	   }
-	  else if (tdcID ==4){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }  	  
-	  \\\second module 
-	  else if (tdcID ==3){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }   
-	  else if (tdcID ==1){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }    
-	   else if (tdcID ==2){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}  
-	   }
-	  else if (tdcID ==0){
-		  if (chID<=16) {return invodd0(chId); }
-		  else { return invodd1(chID);}
-	  }  	  		
+    ///first module
+      if (tdcID == 11){
+        if (chID<=16) { return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==9){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==7){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==5){
+        if (chID<=16) {return even0(chID); }
+        else { return even1(chID);}
+      }
+      else if (tdcID ==10){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}  
+      }
+      else if (tdcID ==8){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+      else if (tdcID ==6){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}  
+       }
+      else if (tdcID ==4){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+    ///second module 
+      else if (tdcID ==3){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+      else if (tdcID ==1){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
+      else if (tdcID ==2){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}  
+      }
+      else if (tdcID ==0){
+        if (chID<=16) {return invodd0(chID); }
+        else { return invodd1(chID);}
+      }
 
+    case 2:
+    //first codmics tests
+      if (tdcID == 9) {
+        if (chID<=16) { return invodd0(chID); }
+        else { return invodd1(chID); }
+      }
+      else if (tdcID == 11) {
+        if (chID<=16) { return invodd0(chID); }
+        else { return invodd1(chID); }
+      }
+      break;
     default:
       printf("Given Padiwa config is not covered!");
       return -1;
@@ -255,31 +266,51 @@ Int_t getLayerNr(UInt_t configuration, UInt_t chID, UInt_t tdcID)
   }
 }
 
+Int_t getX(Int_t layer, Int_t fiber)
+{
+  if      ((layer == 1) || (layer == 3) || (layer == 5) || (layer == 7)) { return fiber; }
+  else if ((layer == 2) || (layer == 4) || (layer == 6) || (layer == 8)) { return 0; }
+  else {
+    printf("Invalid layer!\n");
+    return -1;
+  }
+}
+
+Int_t getY(Int_t layer, Int_t fiber)
+{
+  if      ((layer == 1) || (layer == 3) || (layer == 5) || (layer == 7)) { return 0; }
+  else if ((layer == 2) || (layer == 4) || (layer == 6) || (layer == 8)) { return fiber; }
+  else {
+    printf("Invalid layer!\n");
+    return -1;
+  }
+}
+
 Int_t getModule(UInt_t configuration, UInt_t tdcID)
   {
   switch (configuration) {
-	case 0:
-	 if   (tdcID == 0 || 1 || 2 || 3) { return 2;}
-	 else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 1;}
-	 else {
-		printf("Invalid TDCID!\n");
-        return -1; 	  
-	  }
-	  break;
-	case 1:
-	 if   (tdcID == 0 || 1 || 2 || 3) { return 2;}
-	 else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 1;}
-	 else {
-		printf("Invalid TDCID!\n");
-        return -1; 	  
-	  }
-	  break;
-	default:
+  case 0:
+   if   (tdcID == 0 || 1 || 2 || 3) { return 2;}
+   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 1;}
+   else {
+    printf("Invalid TDCID!\n");
+        return -1;
+    }
+    break;
+  case 1:
+   if   (tdcID == 0 || 1 || 2 || 3) { return 2;}
+   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 1;}
+   else {
+    printf("Invalid TDCID!\n");
+        return -1;
+    }
+    break;
+  default:
       printf("Given Padiwa config is not covered!");
       return -1;
   }
 }
-	
+  
 } /// namespace mapping
 
 namespace fileHandling
