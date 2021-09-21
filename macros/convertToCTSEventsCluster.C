@@ -38,7 +38,7 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
 
   Float_t eventNr      = -1;
   Int_t   padiwaConfig = -1;
-  Module  module       = Module();
+  std::vector<Module> modules{};
   Clusterer clusterer = Clusterer();
 
   std::vector<Cluster> clusters; 
@@ -70,11 +70,10 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
     }
     clusterCounter = 0;
     data->GetEntry(entry);
-    eventNr      = event->getEventNr();
-    padiwaConfig = event->getPadiwaConfig();
-    module       = event->getModule();
-    fibers       = module.getFibers();
-    eventBuffer.setModule(module);
+    eventNr       = event->getEventNr();
+    padiwaConfig  = event->getPadiwaConfig();
+    modules       = event->getModules();
+    eventBuffer.setModules(modules);
 
     fullTracksTmp = clusterer.findClusters(eventBuffer, ParticleType::Cosmic);
     clusters = clusterer.getClusters();
@@ -85,7 +84,9 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
     }
     ctsEventCluster->addCluster(clusters);
     treeout->Fill();
-    module.reset();
+    for (auto& module : modules) {
+      module.reset();
+    }
     clusterer.reset();
     fullTrackCounter+=fullTracksTmp;
     fullTracksTmp = 0;

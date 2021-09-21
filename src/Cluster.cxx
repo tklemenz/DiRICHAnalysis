@@ -48,7 +48,8 @@ void Cluster::addSignal(const Signal &signal)
   mSignals.emplace_back(signal);
 
   for (auto &sig : mSignals) {
-    if (sig.getLayer() != signal.getLayer()) {
+    Int_t layer = mapping::getModule(signal.getConfiguration(), signal.getTDCID()) == 1 ? signal.getLayer() : signal.getLayer()+8;
+    if (sig.getLayer() != layer) {
       printf("Signal is from another layer than the previous ones added to the cluster!\n Signal not added to the cluster.\n");
       mSignals.pop_back();
       return;

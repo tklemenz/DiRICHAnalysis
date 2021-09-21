@@ -4,7 +4,7 @@ ClassImp(CTSEvent);
 
 //________________________________________________________________________________
 CTSEvent::CTSEvent(const CTSEvent &event)
-: mModule(event.mModule)
+: mModuleVec(event.mModuleVec)
 {
   this->setEventNr(event.getEventNr());
   this->setPadiwaConfig(event.getPadiwaConfig());

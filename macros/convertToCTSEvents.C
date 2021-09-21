@@ -33,6 +33,8 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   Double_t eventNr(-1), chID(0), TDC(-1), layer(-1), x(-1), y(-1), signalNr(-1), timeStamp(-1), ToT(-1), padiwaConfig(-1), refTime(-1);
   Int_t prevSigNr(0), prevCh(-1), prevEventNr(-1), firstCounter(0), secondCounter(0);
 
+  bool module1(false), module2(false);
+
   ULong_t nSignals = procNr;
 
   signals->SetBranchAddress("EventNr",      &eventNr);
@@ -50,8 +52,8 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   TFile *fout = new TFile(Form("%s",outputFile),"recreate");
   TTree *tree = new TTree("dummy","RadMap data in fancy objects -> CTSEvents");
 
-  Signal    signal                 = Signal();
-  std::vector<Module>    moduleVec = std::vector<Module>{ Module(), Module() };
+  Signal    signal               = Signal();
+  std::vector<Module>    modules = std::vector<Module>{};
   CTSEvent *event;
 
   event = new CTSEvent();
@@ -72,19 +74,27 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
     signals->GetEntry(entry);
 
     if ((ULong_t(eventNr) != prevEventNr) && (prevEventNr !=1)) {
-      for (auto& module : moduleVec) {
+      for (auto& module : modules) {
         module.removeEmpty();
       }
-      event->setModule(module);
+      event->setModules(modules);
       tree->Fill();
 
-      for (auto& module : moduleVec) {
+      for (auto& module : modules) {
         module.reset();
       }
     }
 
     signal = Signal(ToT*1e9,(timeStamp-refTime)*1e9,signalNr,chID,layer,TDC,padiwaConfig);
-    moduleVec.at(getModule(padiwaConfig, TDC)-1).addSignal(signal);
+    if (mapping::getModule(padiwaConfig, TDC)-1 == 0 && !module1) {
+      modules.emplace_back(Module());
+      module1 = true;
+    }
+    if (mapping::getModule(padiwaConfig, TDC)-1 == 1 && !module2) {
+      modules.emplace_back(Module());
+      module2 = true;
+    }
+    modules.at(mapping::getModule(padiwaConfig, TDC)-1).addSignal(signal);
 
     event->setEventNr(ULong_t(eventNr));
     event->setPadiwaConfig(UShort_t(padiwaConfig));

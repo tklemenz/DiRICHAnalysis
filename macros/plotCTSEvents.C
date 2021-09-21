@@ -47,7 +47,7 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
   CTSEvent *event = nullptr;
   Float_t eventNr      = -1;
   Int_t   padiwaConfig = -1;
-  Module  module       = Module();
+  std::vector<Module> modules{};
   std::vector<Fiber> fibers;
 
   std::vector<TH2D*> totLayerVec{};
@@ -89,24 +89,30 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
 
       data->GetEntry(entry);
 
-      eventNr      = event->getEventNr();
-      padiwaConfig = event->getPadiwaConfig();
-      module       = event->getModule();
-      fibers       = module.getFibers();
+      for(Int_t module=0; module < event->getModules().size(); module++) {
+        modules.emplace_back(event->getModules().at(module));
+      };
 
-      for(auto& fiber : fibers) {
-        if(fiber.getSignals().size() > 0) {
-          layer = fiber.getLayer();
-        }
-        for(auto& signal : fiber.getSignals()) {
-          if(signal.getSignalNr() == 1) {
-            if(signal.getTimeStamp()*-1>1e10){ printf("Layer: %i, ChID: %i, TimeStamp: %g\n",layer,signal.getTDCID(),signal.getTimeStamp() ); }
-            Float_t fiberNr = mapping::getFiberNr(signal.getConfiguration(),signal.getChannelID(),signal.getTDCID());
-            totLayerVec.at(layer-1)->Fill(fiberNr, signal.getToT()*1e9);
-            timeLayerVec.at(layer-1)->Fill(fiberNr, signal.getTimeStamp()*-1);
+      eventNr       = event->getEventNr();
+      padiwaConfig  = event->getPadiwaConfig();
+      modules       = event->getModules();
+
+      for (auto& module : modules) {
+        for (auto& fiber : module.getFibers()) {
+          if(fiber.getSignals().size() > 0) {
+            layer = fiber.getLayer();
           }
-        } // loop over signals in fiber
-      } // loop over fibers in module
+          for(auto& signal : fiber.getSignals()) {
+            if(signal.getSignalNr() == 1) {
+              if(signal.getTimeStamp()*-1>1e10){ printf("Layer: %i, ChID: %i, TimeStamp: %g\n",layer,signal.getTDCID(),signal.getTimeStamp() ); }
+              Float_t fiberNr = mapping::getFiberNr(signal.getConfiguration(),signal.getChannelID(),signal.getTDCID());
+              totLayerVec.at(layer-1)->Fill(fiberNr, signal.getToT()*1e9);
+              timeLayerVec.at(layer-1)->Fill(fiberNr, signal.getTimeStamp()*-1);
+            }
+          } // loop over signals in fiber
+        } // loop over fibers in module
+      } // loop over modules
+      modules.clear();
     } // loop over file
   } // loop over all files
 

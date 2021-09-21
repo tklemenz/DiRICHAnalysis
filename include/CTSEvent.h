@@ -18,7 +18,7 @@ class CTSEvent : public EventBase
   ~CTSEvent() = default;
   CTSEvent(const CTSEvent &event);
 
-  inline void setModule (std::vector<Module> &moduleVec)  { mModuleVec = moduleVec; }
+  inline void setModules (std::vector<Module> &moduleVec)  { mModuleVec = moduleVec; }
 
   std::vector<Module>&       getModules()       { return mModuleVec; }
   const std::vector<Module>& getModules() const { return mModuleVec; }

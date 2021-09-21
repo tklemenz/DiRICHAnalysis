@@ -6,6 +6,8 @@
 
 ClassImp(Clusterer);
 
+///@todo implement proper clustering for the case of multiple modules
+
 static Double_t cluster_fib_range  = 2;   // The allowed range in fiber distance for cluster building
 static Double_t cluster_time_range = 2;  // The allowed time window for cluster building [ns], since the calibrated data is already in ns
 static Double_t tot_uppercut       = 23;  // Make sure there is no total BS
@@ -15,7 +17,10 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
 {
   Int_t fullTrackCounter = 0;
   // Data available within the CTS event
-  std::vector<Fiber> fibers = event.getModule().getFibers();
+  std::vector<Module> modules{};
+  for(Int_t module=0; module < event.getModules().size(); module++) {
+    modules.emplace_back(event.getModules().at(module));
+  }
 
   std::vector<Double_t> distances{};
   std::vector<Double_t> time_distances{};
@@ -29,7 +34,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
   if (particleType == ParticleType::Cosmic) {
     std::vector<std::vector<Signal>> signalsVec{};        /// intermediate storage for signals per layer
     std::vector<std::vector<Cluster>> clustersVec{};
-    for (Int_t layer=0; layer<8; layer++) {
+    for (Int_t layer=0; layer<16; layer++) {
       signalsVec.emplace_back(std::vector<Signal>{});
       clustersVec.emplace_back(std::vector<Cluster>{});
     }
@@ -37,13 +42,17 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
     /// Fill all signals in vectors
     /// One vector per layer
     /// Then one can loop layer by layer to find clusters
-    for (auto& fiber : fibers) {
-      if (fiber.getNSignals() > 0) {
-        layer = fiber.getLayer();
-        for (auto& signal : fiber.getSignals()) {
-          if (signal.getSignalNr() != 1) { continue; }
-          if (signal.getToT() == 0 || signal.getToT() < 0) { continue; }
-          signalsVec.at(layer-1).emplace_back(signal);
+    for (auto& module : modules) {
+      for (auto& fiber : module.getFibers()) {
+        if (fiber.getNSignals() > 0) {
+          layer = fiber.getLayer();
+          for (auto& signal : fiber.getSignals()) {
+            if (signal.getSignalNr() != 1) { continue; }
+            if (signal.getToT() == 0 || signal.getToT() < 0) { continue; }
+            layer = signal.getLayer();
+            if (mapping::getModule(signal.getConfiguration(), signal.getTDCID()) == 2) { layer += 8; }
+            signalsVec.at(layer-1).emplace_back(signal);
+          }
         }
       }
     }
@@ -94,7 +103,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
   }
 
 
-  else if (particleType == ParticleType::Unknown) {
+/*  else if (particleType == ParticleType::Unknown) {
   // Clusters can only contain signals from the same layer
   // Depending on the padiwa configuration a few of the vectors will always be empty
   std::vector<Cluster> layer1clusters{};
@@ -134,7 +143,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer1clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -160,7 +169,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer2clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -186,7 +195,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer3clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -212,7 +221,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer4clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -238,7 +247,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer5clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -264,7 +273,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer6clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -290,7 +299,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer7clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -316,7 +325,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
                       min_time_index = std::min_element(time_distances.begin(),time_distances.end())-time_distances.begin();
                       MhTimeDiff->Fill(time_distances.at(min_time_index));
                       MhSpaceDiff->Fill(distances.at(min_dist_index));
-                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*/){
+                      if(distances.at(min_dist_index)<cluster_fib_range && time_distances.at(min_time_index)<cluster_time_range/* && min_dist_index==min_time_index*//*){
                         layer8clusters.at(min_dist_index).addSignal(signal);
                       }
                       else{
@@ -342,7 +351,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
   if(layer8clusters.size()>0) { for(auto& cluster : layer8clusters) { mClusterVec.emplace_back(std::move(cluster)); } }
   ///-----------------------------------------
 
-  } /// Unknown particle type
+  } /// Unknown particle type */
 
   else {
     printf("Please provide proper ParticleType!\n");
