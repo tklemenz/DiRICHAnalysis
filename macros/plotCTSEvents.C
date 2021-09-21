@@ -106,7 +106,7 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
             if(signal.getSignalNr() == 1) {
               if(signal.getTimeStamp()*-1>1e10){ printf("Layer: %i, ChID: %i, TimeStamp: %g\n",layer,signal.getTDCID(),signal.getTimeStamp() ); }
               Float_t fiberNr = mapping::getFiberNr(signal.getConfiguration(),signal.getChannelID(),signal.getTDCID());
-              totLayerVec.at(layer-1)->Fill(fiberNr, signal.getToT()*1e9);
+              totLayerVec.at(layer-1)->Fill(fiberNr, signal.getToT());
               timeLayerVec.at(layer-1)->Fill(fiberNr, signal.getTimeStamp()*-1);
             }
           } // loop over signals in fiber
