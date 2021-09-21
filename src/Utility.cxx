@@ -197,65 +197,66 @@ Int_t getLayerNr(UInt_t configuration, UInt_t chID, UInt_t tdcID)
 {
   switch (configuration) {
     case 0:
-     if ((tdcID == 4) && (chID<=16)) { return 5;}
-     else if ((tdcID == 4) && (chID >16)) { return 7;}
-     else if ((tdcID == 6) && (chID<=16)) { return 1;}
-     else if ((tdcID == 6) && (chID >16)) { return 3;}
-     else if ((tdcID == 5) && (chID<=16)) { return 4;}
-     else if ((tdcID == 5) && (chID >16)) { return 2;}
-     else if ((tdcID == 7) && (chID<=16)) { return 2;}
-     else if ((tdcID == 7) && (chID >16)) { return 4;}
-     else if ((tdcID == 8) && (chID<=16)) { return 6;}
-     else if ((tdcID == 8) && (chID >16)) { return 8;}
-     else if ((tdcID == 10) && (chID<=16)) { return 2;}
-     else if ((tdcID == 10) && (chID >16)) { return 4;}
-     else if ((tdcID == 9) && (chID<=16)) { return 3;}
-     else if ((tdcID == 9) && (chID >16)) { return 1;}
-     else if ((tdcID == 11) && (chID<=16)) { return 7;}
-     else if ((tdcID == 11) && (chID >16)) { return 5;}
-     
-     else if ((tdcID == 0) && (chID<=16)) { return 8;}
-     else if ((tdcID == 0) && (chID >16)) { return 6;}
-     else if ((tdcID == 2) && (chID<=16)) { return 4;}
-     else if ((tdcID == 2) && (chID >16)) { return 2;}
-     else if ((tdcID == 1) && (chID<=16)) { return 2;}
-     else if ((tdcID == 1) && (chID >16)) { return 4;}
-     else if ((tdcID == 3) && (chID<=16)) { return 6;}
-     else if ((tdcID == 3) && (chID >16)) { return 8;}
-     else {
+      if ((tdcID == 0) && (chID<=16))       { return 8;}   // Module 1
+      else if ((tdcID == 0) && (chID >16))  { return 6;}
+      else if ((tdcID == 1) && (chID<=16))  { return 2;}
+      else if ((tdcID == 1) && (chID >16))  { return 4;}
+      else if ((tdcID == 2) && (chID<=16))  { return 4;}
+      else if ((tdcID == 2) && (chID >16))  { return 2;}
+      else if ((tdcID == 3) && (chID<=16))  { return 6;}
+      else if ((tdcID == 3) && (chID >16))  { return 8;}
+
+      else if ((tdcID == 4) && (chID<=16))  { return 5;}   // Module 0
+      else if ((tdcID == 4) && (chID >16))  { return 7;}
+      else if ((tdcID == 5) && (chID<=16))  { return 4;}
+      else if ((tdcID == 5) && (chID >16))  { return 2;}
+      else if ((tdcID == 6) && (chID<=16))  { return 1;}
+      else if ((tdcID == 6) && (chID >16))  { return 3;}
+      else if ((tdcID == 7) && (chID<=16))  { return 8;}
+      else if ((tdcID == 7) && (chID >16))  { return 6;}
+      else if ((tdcID == 8) && (chID<=16))  { return 6;}
+      else if ((tdcID == 8) && (chID >16))  { return 8;}
+      else if ((tdcID == 9) && (chID<=16))  { return 1;}
+      else if ((tdcID == 9) && (chID >16))  { return 3;}
+      else if ((tdcID == 10) && (chID<=16)) { return 2;}
+      else if ((tdcID == 10) && (chID >16)) { return 4;}
+      else if ((tdcID == 11) && (chID<=16)) { return 7;}
+      else if ((tdcID == 11) && (chID >16)) { return 5;}
+
+      else {
         printf("Invalid TDCID!\n");
         return -1;
       }
       break;
 
     case 1:
-     if ((tdcID == 4) && (chID<=16)) { return 5;}
-     else if ((tdcID == 4) && (chID >16)) { return 7;}
-     else if ((tdcID == 6) && (chID<=16)) { return 1;}
-     else if ((tdcID == 6) && (chID >16)) { return 3;}
-     else if ((tdcID == 5) && (chID<=16)) { return 4;}
-     else if ((tdcID == 5) && (chID >16)) { return 2;}
-     else if ((tdcID == 7) && (chID<=16)) { return 2;}
-     else if ((tdcID == 7) && (chID >16)) { return 4;}
-     else if ((tdcID == 8) && (chID<=16)) { return 6;}
-     else if ((tdcID == 8) && (chID >16)) { return 8;}
-     else if ((tdcID == 10) && (chID<=16)) { return 2;}
-     else if ((tdcID == 10) && (chID >16)) { return 4;}
-     else if ((tdcID == 9) && (chID<=16)) { return 3;}
-     else if ((tdcID == 9) && (chID >16)) { return 1;}
-     else if ((tdcID == 11) && (chID<=16)) { return 7;}
-     else if ((tdcID == 11) && (chID >16)) { return 5;}
-     
-     
-     else if ((tdcID == 0) && (chID<=16)) { return 8;}
-     else if ((tdcID == 0) && (chID >16)) { return 6;}
-     else if ((tdcID == 2) && (chID<=16)) { return 4;}
-     else if ((tdcID == 2) && (chID >16)) { return 2;}
-     else if ((tdcID == 1) && (chID<=16)) { return 1;}
-     else if ((tdcID == 1) && (chID >16)) { return 3;}
-     else if ((tdcID == 3) && (chID<=16)) { return 5;}
-     else if ((tdcID == 3) && (chID >16)) { return 7;}
-     else {
+      if ((tdcID == 0) && (chID<=16))       { return 8;}   // Module 1
+      else if ((tdcID == 0) && (chID >16))  { return 6;}
+      else if ((tdcID == 1) && (chID<=16))  { return 1;}
+      else if ((tdcID == 1) && (chID >16))  { return 3;}
+      else if ((tdcID == 2) && (chID<=16))  { return 4;}
+      else if ((tdcID == 2) && (chID >16))  { return 2;}
+      else if ((tdcID == 3) && (chID<=16))  { return 5;}
+      else if ((tdcID == 3) && (chID >16))  { return 7;}
+
+      else if ((tdcID == 4) && (chID<=16))  { return 5;}   // Module 0
+      else if ((tdcID == 4) && (chID >16))  { return 7;}
+      else if ((tdcID == 5) && (chID<=16))  { return 4;}
+      else if ((tdcID == 5) && (chID >16))  { return 2;}
+      else if ((tdcID == 6) && (chID<=16))  { return 1;}
+      else if ((tdcID == 6) && (chID >16))  { return 3;}
+      else if ((tdcID == 7) && (chID<=16))  { return 8;}
+      else if ((tdcID == 7) && (chID >16))  { return 6;}
+      else if ((tdcID == 8) && (chID<=16))  { return 6;}
+      else if ((tdcID == 8) && (chID >16))  { return 8;}
+      else if ((tdcID == 9) && (chID<=16))  { return 3;}
+      else if ((tdcID == 9) && (chID >16))  { return 1;}
+      else if ((tdcID == 10) && (chID<=16)) { return 2;}
+      else if ((tdcID == 10) && (chID >16)) { return 4;}
+      else if ((tdcID == 11) && (chID<=16)) { return 7;}
+      else if ((tdcID == 11) && (chID >16)) { return 5;}
+
+      else {
         printf("Invalid TDCID!\n");
         return -1;
       }
@@ -290,20 +291,23 @@ Int_t getModule(UInt_t configuration, UInt_t tdcID)
   {
   switch (configuration) {
   case 0:
-   if   (tdcID == 0 || 1 || 2 || 3) { return 2;}
-   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 1;}
+   if   (tdcID == 0 || 1 || 2 || 3) { return 1;}
+   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 0;}
    else {
     printf("Invalid TDCID!\n");
         return -1;
     }
     break;
   case 1:
-   if   (tdcID == 0 || 1 || 2 || 3) { return 2;}
-   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 1;}
+   if   (tdcID == 0 || 1 || 2 || 3) { return 1;}
+   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 0;}
    else {
     printf("Invalid TDCID!\n");
         return -1;
     }
+    break;
+  case 2:
+    return 0;
     break;
   default:
       printf("Given Padiwa config is not covered!");

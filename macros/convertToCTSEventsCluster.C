@@ -94,16 +94,17 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   } /// loop over file
 
   treeout->Write("data");
-  fout->WriteObject(clusterer.MhTimeDiff,"MhTimeDiff");
-  fout->WriteObject(clusterer.MhSpaceDiff,"MhSpaceDiff");
+  //fout->WriteObject(clusterer.MhTimeDiff,"MhTimeDiff");
+  //fout->WriteObject(clusterer.MhSpaceDiff,"MhSpaceDiff");
+  fout->WriteObject(clusterer.mHnSignal,clusterer.mHnSignal->GetName());
 
   fout->Close();
 
   delete ctsEventCluster;
   ctsEventCluster=nullptr;
 
-  printf("\n\n High multiplicity cluster counter:%i\n\n", clusterCounter);
-  printf("\n\n Full track counter:%i\n\n", fullTrackCounter);
+  //printf("\n\n High multiplicity cluster counter:%i\n\n", clusterCounter);
+  //printf("\n\n Full track counter:%i\n\n", fullTrackCounter);
 
 }
 

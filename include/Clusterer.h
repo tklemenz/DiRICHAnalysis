@@ -8,6 +8,8 @@
 
 /// Clusterer class to assign signals from CTSEvents to clusters.
 
+/// @todo implement proper clustering for the case of multiple modules
+
 class Clusterer
 {
  public:
@@ -32,6 +34,7 @@ class Clusterer
 
   TH1D* MhTimeDiff  = new TH1D("hTimeDiff","time difference of signal to closest cluster;timeDiff [ns]",500,0,50);
   TH1D* MhSpaceDiff = new TH1D("hSpaceDiff","space difference of signal to closest cluster;spaceDiff [fiber]",320,0,32);
+  TH1D* mHnSignal = new TH1D("hNSignal","n Signals in CLuster",20,0,20);
 
  private:
   std::vector<Cluster> mClusterVec{}; //holds clusters 

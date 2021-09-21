@@ -40,7 +40,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   signals->SetBranchAddress("EventNr",      &eventNr);
   signals->SetBranchAddress("timeStamp",    &timeStamp);    // in seconds
   signals->SetBranchAddress("ToT",          &ToT);          // in seconds
-  signals->SetBranchAddress("chid",         &chID);
+  signals->SetBranchAddress("chID",         &chID);
   signals->SetBranchAddress("TDC",          &TDC);          // 0 = TDC1500, 1= 1510 etc
   signals->SetBranchAddress("layer",        &layer);        // 1-8
   signals->SetBranchAddress("x",            &x);            // odd layers have  x != 0
@@ -52,8 +52,8 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   TFile *fout = new TFile(Form("%s",outputFile),"recreate");
   TTree *tree = new TTree("dummy","RadMap data in fancy objects -> CTSEvents");
 
-  Signal    signal               = Signal();
-  std::vector<Module>    modules = std::vector<Module>{};
+  Signal    signal            = Signal();
+  std::vector<Module> modules = std::vector<Module>{};
   CTSEvent *event;
 
   event = new CTSEvent();
@@ -86,6 +86,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
     }
 
     signal = Signal(ToT*1e9,(timeStamp-refTime)*1e9,signalNr,chID,layer,TDC,padiwaConfig);
+    //printf("module Nr: %d\n", mapping::getModule(padiwaConfig, TDC)-1);
     if (mapping::getModule(padiwaConfig, TDC)-1 == 0 && !module1) {
       modules.emplace_back(Module());
       module1 = true;

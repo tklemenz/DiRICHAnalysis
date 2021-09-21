@@ -6,8 +6,6 @@
 
 ClassImp(Clusterer);
 
-///@todo implement proper clustering for the case of multiple modules
-
 static Double_t cluster_fib_range  = 2;   // The allowed range in fiber distance for cluster building
 static Double_t cluster_time_range = 2;  // The allowed time window for cluster building [ns], since the calibrated data is already in ns
 static Double_t tot_uppercut       = 23;  // Make sure there is no total BS
@@ -97,6 +95,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
     for (auto& layerClus : clustersVec) {
       for (auto& cluster : layerClus) {
         //printf("Cluster size: %d\n", cluster.getNSignals());
+        mHnSignal->Fill(cluster.getNSignals());
         mClusterVec.emplace_back(std::move(cluster));
       }
     }
