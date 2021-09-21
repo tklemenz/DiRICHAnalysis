@@ -6,7 +6,7 @@
 
 /// This class represents a basic CTS event containing signals.
 ///
-/// The module object contains all signal information.
+/// The module objects contain all signal information.
 ///
 /// Before an event is written to file the removeEmpty funtion should be
 /// called on the module to reduce data size and increase performance.
@@ -18,15 +18,15 @@ class CTSEvent : public EventBase
   ~CTSEvent() = default;
   CTSEvent(const CTSEvent &event);
 
-  inline void setModule (Module &module)  { mModule = module; }
+  inline void setModule (std::vector<Module> &moduleVec)  { mModuleVec = moduleVec; }
 
-  Module&       getModule()       { return mModule; }
-  const Module& getModule() const { return mModule; }
+  std::vector<Module>&       getModules()       { return mModuleVec; }
+  const std::vector<Module>& getModules() const { return mModuleVec; }
 
  private:
-  Module mModule;  ///< contains all fibers and signals
+  std::vector<Module> mModuleVec;  ///< contains all fibers and signals
 
-  ClassDef(CTSEvent,1);
+  ClassDef(CTSEvent,2);
 };
 
 #endif

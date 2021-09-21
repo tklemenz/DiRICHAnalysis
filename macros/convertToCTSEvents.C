@@ -50,8 +50,8 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   TFile *fout = new TFile(Form("%s",outputFile),"recreate");
   TTree *tree = new TTree("dummy","RadMap data in fancy objects -> CTSEvents");
 
-  Signal    signal = Signal();
-  Module    module = Module();
+  Signal    signal                 = Signal();
+  std::vector<Module>    moduleVec = std::vector<Module>{ Module(), Module() };
   CTSEvent *event;
 
   event = new CTSEvent();
@@ -72,15 +72,19 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
     signals->GetEntry(entry);
 
     if ((ULong_t(eventNr) != prevEventNr) && (prevEventNr !=1)) {
-      module.removeEmpty();
+      for (auto& module : moduleVec) {
+        module.removeEmpty();
+      }
       event->setModule(module);
       tree->Fill();
 
-      module.reset();
+      for (auto& module : moduleVec) {
+        module.reset();
+      }
     }
 
     signal = Signal(ToT*1e9,(timeStamp-refTime)*1e9,signalNr,chID,layer,TDC,padiwaConfig);
-    module.addSignal(signal);
+    moduleVec.at(getModule(padiwaConfig, TDC)-1).addSignal(signal);
 
     event->setEventNr(ULong_t(eventNr));
     event->setPadiwaConfig(UShort_t(padiwaConfig));
