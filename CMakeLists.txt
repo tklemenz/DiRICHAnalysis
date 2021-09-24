@@ -69,7 +69,6 @@ set(EXE_SRCS
     macros/convertToCTSEvents.C
     macros/plotCTSEvents.C
     macros/convertToCTSEventsCluster.C
-    macros/timeCalibration.C
     macros/timeCalibrationTuple.C
     )
 
@@ -78,7 +77,6 @@ set(EXE_NAMES
     convertToCTSEvents
     plotCTSEvents
     convertToCTSEventsCluster
-    timeCalibration
     timeCalibrationTuple
     )
 
