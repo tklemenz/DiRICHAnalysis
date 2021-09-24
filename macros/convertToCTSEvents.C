@@ -20,7 +20,7 @@
 extern char* optarg;
 
 void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t procNr)
-{ 
+{
   TFile* f = TFile::Open(inputFile);
 
   if (f->IsOpen()==kFALSE){
@@ -64,7 +64,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
 
   printf("signals to process: %lu\t %.1f%% of the file\n", nSignals, Float_t(100*nSignals)/Float_t(signals->GetEntries()));
 
-  for (ULong_t entry = 0; entry < nSignals; entry++) { 
+  for (ULong_t entry = 0; entry < nSignals; entry++) {
     if ((((entry+1)%100000) == 0) || (entry == (nSignals-1))) {
       printf("\rprocessing signal %lu...", entry+1);
       fflush(stdout);
@@ -74,7 +74,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
     signals->GetEntry(entry);
 
     if ((ULong_t(eventNr) != prevEventNr) && (prevEventNr !=1)) {
-      for (auto& module : modules) { 
+      for (auto& module : modules) {
         module.removeEmpty();
       }
       event->setModules(modules);
