@@ -288,19 +288,19 @@ Int_t getY(Int_t layer, Int_t fiber)
 }
 
 Int_t getModule(UInt_t configuration, UInt_t tdcID)
-  {
+{
   switch (configuration) {
   case 0:
-   if   (tdcID == 0 || 1 || 2 || 3) { return 1;}
-   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 0;}
+   if   (tdcID == 0 || tdcID == 1 || tdcID == 2 || tdcID == 3) { return 1;}
+   else if (tdcID ==  4 || tdcID == 5 || tdcID == 6 || tdcID == 7 || tdcID == 8 || tdcID == 9 || tdcID == 10 || tdcID == 11 ) { return 0;}
    else {
     printf("Invalid TDCID!\n");
         return -1;
     }
     break;
   case 1:
-   if   (tdcID == 0 || 1 || 2 || 3) { return 1;}
-   else if (tdcID ==  4 || 5 || 6 || 7 || 8 || 9 || 10 || 11 ) { return 0;}
+   if   (tdcID == 0 || tdcID == 1 || tdcID == 2 || tdcID == 3) { return 1;}
+   else if (tdcID ==  4 || tdcID == 5 || tdcID == 6 || tdcID == 7 || tdcID == 8 || tdcID == 9 || tdcID == 10 || tdcID == 11 ) { return 0;}
    else {
     printf("Invalid TDCID!\n");
         return -1;
@@ -314,7 +314,15 @@ Int_t getModule(UInt_t configuration, UInt_t tdcID)
       return -1;
   }
 }
-  
+
+
+Float_t getCoord(Float_t meanFiber, Int_t layer)
+{
+  if (layer == 1 || layer == 5 || layer == 9 || layer == 13) { return 2*meanFiber; }
+  else if (layer == 3 || layer == 7 || layer == 11 || layer == 15) { return 2*meanFiber-1; }
+  else { return 2*meanFiber-1; }
+}
+
 } /// namespace mapping
 
 namespace fileHandling

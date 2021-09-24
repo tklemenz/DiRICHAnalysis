@@ -17,7 +17,6 @@ Cluster::Cluster(const Cluster &cluster)
   mTDCID(cluster.mTDCID),
   mFlags(cluster.mFlags)
 {
-  
 }
 
 //________________________________________________________________________________
@@ -34,7 +33,6 @@ Cluster::Cluster(const Double_t qTot, const Double_t qMax, const Float_t meanFib
   mTDCID(TDCID),
   mFlags(flags)
 {
-  
 }
 
 //________________________________________________________________________________
@@ -47,9 +45,12 @@ void Cluster::addSignal(const Signal &signal)
 
   mSignals.emplace_back(signal);
 
+  Int_t layer = mapping::getModule(signal.getConfiguration(), signal.getTDCID()) == 0 ? signal.getLayer() : signal.getLayer()+8;
+  Int_t fiberNr = -1;
+
   for (auto &sig : mSignals) {
-    Int_t layer = mapping::getModule(signal.getConfiguration(), signal.getTDCID()) == 1 ? signal.getLayer() : signal.getLayer()+8;
-    if (sig.getLayer() != layer) {
+    Int_t sigLayer = mapping::getModule(sig.getConfiguration(), sig.getTDCID()) == 0 ? sig.getLayer() : sig.getLayer()+8;
+    if (sigLayer != layer) {
       printf("Signal is from another layer than the previous ones added to the cluster!\n Signal not added to the cluster.\n");
       mSignals.pop_back();
       return;
@@ -61,12 +62,12 @@ void Cluster::addSignal(const Signal &signal)
   }
 
   for (auto &sig : mSignals) {
-    Int_t fiberNr = mapping::getFiberNr(sig.getConfiguration(), sig.getChannelID(), sig.getTDCID());
+    fiberNr        = mapping::getFiberNr(sig.getConfiguration(), sig.getChannelID(), sig.getTDCID());
     meanFiber     += (fiberNr*sig.getToT())/weights;
     meanTimeStamp += (sig.getTimeStamp()*sig.getToT())/weights;
   }
 
-  mLayer = signal.getLayer();
+  mLayer = layer;
   mTDCID = signal.getTDCID();
   mQTot += signal.getToT();
   mMeanFiber = meanFiber;

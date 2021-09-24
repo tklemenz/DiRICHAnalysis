@@ -10,8 +10,8 @@
 #include <iomanip>
 #include <unistd.h>
 
-#include "CTSEvent.h"
 #include "CTSEventClusters.h"
+#include "Clusterer.h"
 #include "Utility.h"
 
 ///< usage: ./convertToCTSEventsCluster -i inputfile -o outputfile -n numberOfEventsToBeProcessed
@@ -82,7 +82,9 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
       if(cluster.getNSignals() > clusterCounter) { clusterCounter = cluster.getNSignals();}
       //ctsEventCluster->addCluster(cluster);
     }
-    ctsEventCluster->addCluster(clusters);
+    ctsEventCluster->setClusters(clusters);
+    ctsEventCluster->setEventNr(eventNr);
+    ctsEventCluster->setPadiwaConfig(padiwaConfig);
     treeout->Fill();
     for (auto& module : modules) {
       module.reset();

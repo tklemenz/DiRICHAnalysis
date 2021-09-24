@@ -21,6 +21,29 @@
 /// have pions in the proton data! Otherwise it would be easy since we know which
 /// particles we expect in every run. For now I would set unknown by default.
 
+/// For cosmic particles:
+/// vertical fibers
+///           /|
+///          /a|
+///         /  |  4mm (2 fibers, distance between "neighboring" layers; 1->3 4mm, 1->5 8mm, 1->7 12mm)
+///        /   |
+///       /____|
+///         dx
+
+/// dx: distance of coordinates of clusters in "neighboring" same direction fibers e.g. layer 1 and layer 3, dx is negative in this example
+/// a = atan(dx/4), a is negative in this example
+
+/// horizontal fibers
+///           /|
+///          /b|
+///         /  |  4mm (2 fibers, distance between "neighboring" layers; 2->4 4mm, 2->6 8mm, 2->8 12mm)
+///        /   |
+///       /____|
+///         dy
+
+/// dy: distance of coordinates of clusters in "neighboring" same direction fibers e.g. layer 2 and layer 4, dy is negative in this example
+/// b = atan(dy/4), b is negative in this example
+
 class Tracker
 {
  public:
@@ -28,11 +51,14 @@ class Tracker
   ~Tracker() = default;
 
   /// run the tracking
-  void run(CTSEventClusters& event);
-  void run(std::vector<Cluster>& clusters);
+  /// @todo Properly implement tracking in second module
+  void run(CTSEventClusters& event, const ParticleType& particletype);
+  void run(std::vector<Cluster>& clusters, const ParticleType& particletype);
 
   std::vector<Track>&       getTracks()       { return mTrackVec; }
   const std::vector<Track>& getTracks() const { return mTrackVec; }
+
+  inline void reset() { mTrackVec.clear(); }
 
  private:
 

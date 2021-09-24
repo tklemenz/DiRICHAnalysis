@@ -16,6 +16,7 @@
 #pragma link C++ class Tracker +;
 #pragma link C++ class Clusterer +;
 #pragma link C++ class ClusterEvent +;
+#pragma link C++ class CTSEventTracks +;
 
 #pragma link C++ function mapping::getModuleSpot +;
 #pragma link C++ function mapping::getFiberInfoFromModSpot +;

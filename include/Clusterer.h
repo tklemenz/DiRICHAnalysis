@@ -7,6 +7,7 @@
 #include <vector>
 
 /// Clusterer class to assign signals from CTSEvents to clusters.
+/// For ParticleTyple::Cosmic the clusterer assumes that there is not more than one cluster per layer, which is a fair assumption.
 
 /// @todo implement proper clustering for the case of multiple modules
 
@@ -16,25 +17,25 @@ class Clusterer
   Clusterer() = default;
   ~Clusterer() = default;
 
-  // Use this if you already know which clusters/signals you want to have
+  /// Use this if you already know which clusters/signals you want to have
   inline void setClusters (std::vector<Cluster> &clusterVec) { mClusterVec = clusterVec; }
 
-  // If it is not clear which signals should be taken into your clusters, use this
-  // This function loops through the signals in the given CTS Event,
-  // applies some cuts: allowed distance cut in position (fibers) and time (Work In Progress; Not Yet Implemented) 
-  // And gives back the vector of found clusters.
+  /// If it is not clear which signals should be taken into your clusters, use this
+  /// This function loops through the signals in the given CTS Event,
+  /// applies some cuts: allowed distance cut in position (fibers) and time (Work In Progress; Not Yet Implemented) 
+  /// And gives back the vector of found clusters.
   Int_t findClusters(CTSEvent& event, const ParticleType& particleType = ParticleType::Cosmic);
 
   std::vector<Cluster>&       getClusters()       { return mClusterVec; }
   const std::vector<Cluster>& getClusters() const { return mClusterVec; }
 
-  // Useful when calling this function iteratively in macro so that your cluster container doesn't grow indefinetely
-  // Try to guess how I found out that this was needed
+  /// Useful when calling this function iteratively in macro so that your cluster container doesn't grow indefinetely
+  /// Try to guess how I found out that this was needed
   inline void reset() { mClusterVec.clear(); }
 
   TH1D* MhTimeDiff  = new TH1D("hTimeDiff","time difference of signal to closest cluster;timeDiff [ns]",500,0,50);
   TH1D* MhSpaceDiff = new TH1D("hSpaceDiff","space difference of signal to closest cluster;spaceDiff [fiber]",320,0,32);
-  TH1D* mHnSignal = new TH1D("hNSignal","n Signals in CLuster",20,0,20);
+  TH1D* mHnSignal   = new TH1D("hNSignal","n Signals in CLuster",20,0,20);
 
  private:
   std::vector<Cluster> mClusterVec{}; //holds clusters 

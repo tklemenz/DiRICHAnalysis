@@ -63,6 +63,8 @@ enum class PadiwaSocket : char {
   L8odd,
 };
 
+inline bool isEven(Int_t number) { return number % 2 == 0 ? true : false; }
+
 /// This namespace holds the mapping functions.
 namespace mapping
 {
@@ -100,9 +102,8 @@ namespace mapping
   Int_t getModule(UInt_t configuration, UInt_t tdcID);
    
   /// get the actual spatial coordinate in mm
-  inline Float_t getCoord(Float_t meanFiber) { return 2*meanFiber-1; }
-
-
+  /// @todo Implement even layers properly
+  Float_t getCoord(Float_t meanFiber, Int_t layer);
 
 } // namespace mapping
 

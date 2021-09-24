@@ -35,6 +35,7 @@ set(SRCS
    src/Tracker.cxx
    src/Clusterer.cxx
    src/ClusterEvent.cxx
+   src/CTSEventTracks.cxx
    )
 
 set(HEADERS
@@ -52,6 +53,7 @@ set(HEADERS
    include/Tracker.h
    include/Clusterer.h
    include/ClusterEvent.h
+   include/CTSEventTracks.h
    )
 
 ROOT_GENERATE_DICTIONARY(G__RMA ${HEADERS} LINKDEF include/LinkDef.h)
@@ -70,6 +72,7 @@ set(EXE_SRCS
     macros/plotCTSEvents.C
     macros/convertToCTSEventsCluster.C
     macros/timeCalibrationTuple.C
+    macros/convertToCTSEventsTrack.C
     )
 
 set(EXE_NAMES
@@ -78,6 +81,7 @@ set(EXE_NAMES
     plotCTSEvents
     convertToCTSEventsCluster
     timeCalibrationTuple
+    convertToCTSEventsTrack
     )
 
 list(LENGTH EXE_SRCS count)

@@ -7,9 +7,10 @@
 ClassImp(Clusterer);
 
 static Double_t cluster_fib_range  = 2;   // The allowed range in fiber distance for cluster building
-static Double_t cluster_time_range = 2;  // The allowed time window for cluster building [ns], since the calibrated data is already in ns
+static Double_t cluster_time_range = 2;   // The allowed time window for cluster building [ns], since the calibrated data is already in ns
 static Double_t tot_uppercut       = 23;  // Make sure there is no total BS
 static Double_t tot_lowercut       = 10;  // Get rid of noise
+static Int_t completeBSThreshold   = 500;
 
 Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
 {
@@ -46,7 +47,7 @@ Int_t Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType)
           layer = fiber.getLayer();
           for (auto& signal : fiber.getSignals()) {
             if (signal.getSignalNr() != 1) { continue; }
-            if (signal.getToT() == 0 || signal.getToT() < 0) { continue; }
+            if (signal.getToT() == 0 || signal.getToT() < 0 || signal.getToT() > completeBSThreshold) { continue; }
             layer = signal.getLayer();
             if (mapping::getModule(signal.getConfiguration(), signal.getTDCID()) == 2) { layer += 8; }
             signalsVec.at(layer-1).emplace_back(signal);

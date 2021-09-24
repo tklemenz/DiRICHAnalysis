@@ -2,7 +2,7 @@
 #define CTSEVENTCLUSTERS_H
 
 #include "EventBase.h"
-#include "Clusterer.h"
+#include "Cluster.h"
 
 /// This class represents a CTS event containing clusters.
 /// It holds:
@@ -16,7 +16,8 @@ class CTSEventClusters : public EventBase
   CTSEventClusters(const CTSEventClusters &event);
 
   inline void addCluster (Cluster &cluster)  { mClusterVec.emplace_back(cluster); }
-  inline void addCluster (std::vector<Cluster> &cluster)  { mClusterVec = cluster; }
+
+  inline void setClusters (std::vector<Cluster> &clusters)  { mClusterVec = clusters; }
 
   std::vector<Cluster>&       getClusters()       { return mClusterVec; }
   const std::vector<Cluster>& getClusters() const { return mClusterVec; }

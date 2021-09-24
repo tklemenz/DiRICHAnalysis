@@ -41,10 +41,22 @@ class Track
   /// Get the particle type
   inline ParticleType getType() { return mParticleType; }
 
+  /// Get alpha
+  inline Float_t getAlpha() { return mAlpha; }
+
+  /// Get beta
+  inline Float_t getBeta() { return mBeta; }
+
+  /// Get vertex
+  inline std::pair<Float_t, Float_t> getVertex() { return mVertex; }
+
  private:
 
-  std::vector<Cluster> mClusterVec{}; ///< holds all clusters that are assigned to the track
-  ParticleType         mParticleType; ///< particle type: can be Pion, Proton or Unknown
+  std::vector<Cluster>        mClusterVec{}; ///< holds all clusters that are assigned to the track
+  ParticleType                mParticleType; ///< particle type: can be Pion, Proton or Unknown
+  Float_t                     mAlpha;        ///< angle between track and vertical line while looking in odd layer fiber direction. Positive alpha: particle is traveling in direction of higher fiber numbers
+  Float_t                     mBeta;         ///< angle between track and horizontal line while looking in even layer fiber direction. Positive beta: particle is traveling in direction of higher fiber numbers
+  std::pair<Float_t, Float_t> mVertex;       ///< mean fiber numbers of the seed clusters; first: x-direction (odd Layer), second: y-direction (even layer)
 
   /// Associate a Cluster with the track.
   /// @param Cluster
@@ -53,6 +65,15 @@ class Track
   /// Set the ParticleType
   /// @param ParticleType
   inline void setType(ParticleType &type) { mParticleType = type; }
+
+  /// Set alpha
+  inline void setAlpha(Float_t &alpha) { mAlpha = alpha; }
+
+  /// Set beta
+  inline void setBeta(Float_t &beta) { mAlpha = beta; }
+
+  /// Set vertex
+  inline void setVertex(std::pair<Float_t, Float_t> &vertex) { mVertex = vertex; }
 
   ClassDef(Track,1);
 };
