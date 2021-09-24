@@ -52,10 +52,15 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
 
   std::vector<TH2D*> totLayerVec{};
   std::vector<TH2D*> timeLayerVec{};
+  std::vector<TH1D*> totFiberVec{}; //only for Layer 1
   for(Int_t i=0; i<8; i++) {
     totLayerVec.emplace_back(new TH2D(Form("hToTL%i",i+1),Form("ToT distribution of first signals vs fiber in L%i;fiber;ToT",i+1),33,0,33,500,0,50));
     timeLayerVec.emplace_back(new TH2D(Form("hTimeL%i",i+1),Form("TimeStamp distribution of first signals vs fiber in L%i;fiber;ToT",i+1),33,0,33,200000,0,200000));
   }
+  for(Int_t i=0; i<32; i++) {
+	totFiberVec.emplace_back(new TH1D(Form("hToTF%i", i+1),Form("ToT distribustions of first Signals in Layer 1Fiber %i;ToT;Counts", i+1),400,0,40));  
+  }
+  
   /*========================================================
   ==========================================================*/
 
@@ -108,6 +113,9 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
               Float_t fiberNr = mapping::getFiberNr(signal.getConfiguration(),signal.getChannelID(),signal.getTDCID());
               totLayerVec.at(layer-1)->Fill(fiberNr, signal.getToT());
               timeLayerVec.at(layer-1)->Fill(fiberNr, signal.getTimeStamp()*-1);
+              if(layer == 1) {
+				  totFiberVec.at(fiberNr-1)->Fill(signal.getToT());
+			  }
             }
           } // loop over signals in fiber
         } // loop over fibers in module
@@ -117,8 +125,9 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
   } // loop over all files
 
   Int_t histCounter = 0;
-  for(auto& hist : totLayerVec) { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
+  for(auto& hist : totLayerVec)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
   for(auto& hist : timeLayerVec) { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); } }
+  for(auto& hist : totFiberVec)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); } }
 
   TCanvas *c1 = new TCanvas("cToTDists","cToTDists");
   c1->DivideSquare(histCounter);
@@ -131,8 +140,21 @@ void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t pro
     hist->Draw("COLZ");
     padIter++;
   }
+  
+  TCanvas*c2=new TCanvas("fiberToTDists","fiberToTDists");
+  c2->DivideSquare(16);
+  
+  Int_t padIter2 = 1;
+  for(auto& hist : totFiberVec) {
+	if(hist->GetEntries() == 0) { continue; }
+	c2->cd(padIter2);
+	gPad->SetLogz();
+	hist->Draw("LF2");
+	padIter2++; 
+  }
 
   fout->WriteObject(c1, c1->GetName());
+  fout->WriteObject(c2, c2->GetName());
 
   fout->Close();
 }

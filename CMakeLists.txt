@@ -70,6 +70,7 @@ set(EXE_SRCS
     macros/plotCTSEvents.C
     macros/convertToCTSEventsCluster.C
     macros/timeCalibration.C
+    macros/timeCalibrationTuple.C
     )
 
 set(EXE_NAMES
@@ -78,6 +79,7 @@ set(EXE_NAMES
     plotCTSEvents
     convertToCTSEventsCluster
     timeCalibration
+    timeCalibrationTuple
     )
 
 list(LENGTH EXE_SRCS count)
