@@ -42,7 +42,16 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   Clusterer clusterer = Clusterer();
 
   std::vector<Cluster> clusters; 
-  std::vector<Fiber> fibers;
+
+  std::vector<TH2D*> clusterQtotDists{};
+  std::vector<TH2D*> clusterQmaxDists{};
+  for(Int_t i=0; i<16; i++) {
+    clusterQtotDists.emplace_back(new TH2D(Form("hToTtotalL%i",i+1),Form("ToT total distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,500,0,50));
+    clusterQmaxDists.emplace_back(new TH2D(Form("hToTmaxL%i",i+1),Form("max ToT distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,500,0,50));
+  }
+
+  TH1D* hNSignalsCluster  = new TH1D("hNSignalsCluster","n Signals in Cluster",20,0,20);
+  TH1D* hNClusters = new TH1D("hNClusters","n Clusters in Event",20,0,20);
 
   Int_t fiberMult(0), layer(-1), x(-1), y(-1), clusterCounter(0);
 
@@ -50,9 +59,9 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   TTree *treeout = new TTree("dummy","RadMap data in CTSEvents -> CTSEventClusters");
 
   CTSEvent *event;
-  CTSEvent eventBuffer;
+  //CTSEvent eventBuffer;
   event = new CTSEvent();
-  eventBuffer = CTSEvent();
+  //eventBuffer = CTSEvent();
   CTSEventClusters *ctsEventCluster;
   ctsEventCluster = new CTSEventClusters();
 
@@ -60,7 +69,6 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   treeout->Branch("CTSEventsCluster","ctsEventCluster",ctsEventCluster,32000,1);
 
   printf("events to process: %lu\t %.1f%% of the file\n", nEvents, Float_t(100*nEvents)/Float_t(data->GetEntries()));
-
 
   for (ULong_t entry = 0; entry < nEvents; entry++) {
     if ((((entry+1)%1000) == 0) || (entry == (nEvents-1))) {
@@ -73,15 +81,18 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
     eventNr       = event->getEventNr();
     padiwaConfig  = event->getPadiwaConfig();
     modules       = event->getModules();
-    eventBuffer.setModules(modules);
+    //eventBuffer.setModules(modules);
 
-    fullTracksTmp = clusterer.findClusters(eventBuffer, ParticleType::Cosmic);
+    clusterer.findClusters(*event, ParticleType::Cosmic);
     clusters = clusterer.getClusters();
 
     for(auto& cluster : clusters){
-      if(cluster.getNSignals() > clusterCounter) { clusterCounter = cluster.getNSignals();}
-      //ctsEventCluster->addCluster(cluster);
+      clusterQtotDists.at(cluster.getLayer()-1)->Fill(Int_t(std::round(cluster.getMeanFiber())), cluster.getQTot());
+      clusterQmaxDists.at(cluster.getLayer()-1)->Fill(Int_t(std::round(cluster.getMeanFiber())), cluster.getQMax());
+      hNSignalsCluster->Fill(cluster.getNSignals());
     }
+    hNClusters->Fill(clusters.size());
+
     ctsEventCluster->setClusters(clusters);
     ctsEventCluster->setEventNr(eventNr);
     ctsEventCluster->setPadiwaConfig(padiwaConfig);
@@ -90,24 +101,47 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
       module.reset();
     }
     clusterer.reset();
-    fullTrackCounter+=fullTracksTmp;
-    fullTracksTmp = 0;
-    
   } /// loop over file
 
   treeout->Write("data");
-  //fout->WriteObject(clusterer.MhTimeDiff,"MhTimeDiff");
-  //fout->WriteObject(clusterer.MhSpaceDiff,"MhSpaceDiff");
-  fout->WriteObject(clusterer.mHnSignal,clusterer.mHnSignal->GetName());
+  fout->WriteObject(clusterer.hNSignalsEvent, clusterer.hNSignalsEvent->GetName());
+  fout->WriteObject(clusterer.hNGoodSignalsEvent, clusterer.hNGoodSignalsEvent->GetName());
+  fout->WriteObject(hNClusters, hNClusters->GetName());
+  fout->WriteObject(hNSignalsCluster,hNSignalsCluster->GetName());
+
+  Int_t histCounter = 0;
+  for(auto& hist : clusterQtotDists)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
+  for(auto& hist : clusterQmaxDists)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); } }
+
+  TCanvas *c1 = new TCanvas("ctotToTDists","ctotToTDists");
+  c1->DivideSquare(histCounter);
+  Int_t padIter = 1;
+  for(auto& hist : clusterQtotDists) {
+    if(hist->GetEntries() == 0) { continue; }
+    c1->cd(padIter);
+    gPad->SetLogz();
+    hist->Draw("COLZ");
+    padIter++;
+  }
+
+  TCanvas*c2 = new TCanvas("cmaxToTDists","cmaxToTDists");
+  c2->DivideSquare(histCounter);
+  padIter = 1;
+  for(auto& hist : clusterQmaxDists) {
+  if(hist->GetEntries() == 0) { continue; }
+    c2->cd(padIter);
+    gPad->SetLogz();
+    hist->Draw("COLZ");
+    padIter++; 
+  }
+
+  fout->WriteObject(c1, c1->GetName());
+  fout->WriteObject(c2, c2->GetName());
 
   fout->Close();
 
   delete ctsEventCluster;
   ctsEventCluster=nullptr;
-
-  //printf("\n\n High multiplicity cluster counter:%i\n\n", clusterCounter);
-  //printf("\n\n Full track counter:%i\n\n", fullTrackCounter);
-
 }
 
 int main(int argc, char** argv)

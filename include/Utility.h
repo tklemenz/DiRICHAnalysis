@@ -16,8 +16,8 @@ enum class ParticleType : char {
   Unknown     ///< unknown particle
 };
 
-/// DiRICH enum class
-enum class DiRich : char {
+/// DiRICH enum class           // probably not even needed
+enum class DiRICH : char {
   d1200,  ///< TDCID 0
   d1201,  ///< TDCID 1
   d1202,  ///< TDCID 2
@@ -30,37 +30,6 @@ enum class DiRich : char {
   d1209,  ///< TDCID 9
   d120a,  ///< TDCID 10
   d120b,  ///< TDCID 11
-};
-
-/// Padiwa enum class
-enum class Padiwa : char {
-  p1500_0,    ///< TDC 0, ch 1-16
-  p1500_1,    ///< TDC 0, ch 17-32
-  p1510_0,    ///< TDC 1, ch 1-16
-  p1510_1,    ///< TDC 1, ch 17-32
-  p1520_0,    ///< TDC 2, ch 1-16
-  p1520_1,    ///< TDC 2, ch 17-32
-  p1530_0,    ///< TDC 3, ch 1-16
-  p1530_1     ///< TDC 3, ch 17-32
-};
-
-enum class PadiwaSocket : char {
-  L1even,
-  L2even,
-  L3even,
-  L4even,
-  L5even,
-  L6even,
-  L7even,
-  L8even,
-  L1odd,
-  L2odd,
-  L3odd,
-  L4odd,
-  L5odd,
-  L6odd,
-  L7odd,
-  L8odd,
 };
 
 inline bool isEven(Int_t number) { return number % 2 == 0 ? true : false; }

@@ -20,7 +20,7 @@
 
 extern char* optarg;
 
-void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULong_t procNr)
+void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULong_t procNr, const bool& debugTracker)
 {
   TFile* f = TFile::Open(inputFile);
 
@@ -65,15 +65,15 @@ void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULon
     data->GetEntry(entry);
     eventNr       = event->getEventNr();
     padiwaConfig  = event->getPadiwaConfig();
-    printf("%s[MACRO]%s event n clusters: %lu\n", text::LBLU, text::RESET, event->getClusters().size());
+    printf("%s[MACRO] %s(Event %g)%s nClusters: %lu\n", text::LBLU, text::LYEL, eventNr, text::RESET, event->getClusters().size());
     eventBuffer.setClusters(event->getClusters());
 
-    tracker.run(eventBuffer, ParticleType::Cosmic);
+    tracker.run(eventBuffer, ParticleType::Cosmic, debugTracker);
 
-    /*tracks = tracker.getTracks();
+    tracks = tracker.getTracks();
 
     for(auto& track : tracks){
-      printf("Number of clusters in track: %lu\n", track.getClusters().size());
+      printf("%s[MACRO]%s Number of clusters in track: %lu\n", text::LBLU, text::RESET, track.getClusters().size());
     }
 
     ctsEventTracks->setTracks(tracks);
@@ -82,7 +82,7 @@ void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULon
 
     treeout->Fill();
 
-    tracker.reset();*/
+    tracker.reset();
     
   } /// loop over file
 
@@ -100,9 +100,10 @@ int main(int argc, char** argv)
   char    inputFile[512]="";
   char    outputFile[512]="convertToCTSEventsTrack_output.root";
   ULong_t procNr=-1;
+  bool    debugTracker = false;
 
   int argsforloop;
-  while ((argsforloop = getopt(argc, argv, "hi:o:n:")) != -1) {
+  while ((argsforloop = getopt(argc, argv, "hi:o:n:d:")) != -1) {
     switch (argsforloop) {
       case '?':
         ///TODO: write usage function
@@ -116,6 +117,10 @@ int main(int argc, char** argv)
       case 'n':
         procNr = std::atoi(optarg);
         break;
+      case 'd':
+        if (std::atoi(optarg) > 0) { debugTracker = true; }
+        else { printf("Valid debug options: '1', '0' (default)"); }
+        break;
       default:
         printf("\n\n%s%sdefault case%s\n\n",text::BOLD,text::RED,text::RESET);
         exit(EXIT_FAILURE);
@@ -124,7 +129,7 @@ int main(int argc, char** argv)
 
   printf("\n\n%sRunning convertToCTSEventsTrack%s\n\n",text::BOLD,text::RESET);
   
-  convertToCTSEventsTrack(inputFile,outputFile,procNr);
+  convertToCTSEventsTrack(inputFile,outputFile,procNr,debugTracker);
 
   printf("\n\n%s%sDONE!%s\n\n",text::BOLD,text::GRN,text::RESET);
 }

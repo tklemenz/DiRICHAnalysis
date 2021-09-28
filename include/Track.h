@@ -33,7 +33,7 @@ class Track
   Track(const Track &track);
 
   /// This one would most likely be used. Gets all the track information directly.
-  Track(const std::vector<Cluster> &clusterVec, const ParticleType &type);
+  Track(const std::vector<Cluster> &clusterVec, const Float_t &alpha, const Float_t &beta, const std::pair<Float_t, Float_t> &vertex, const ParticleType &type);
 
   /// Get the clusters in a std::vector
   inline std::vector<Cluster>& getClusters() { return mClusterVec; }

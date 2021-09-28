@@ -16,7 +16,9 @@ class Cluster
 {
  public:
   enum Flags : unsigned short {
-    usedInTrack = 0x1 << 0,         ///< Check if the Cluster is already associated to a Track.
+    usedInTrack         = 0x1 << 0,         ///< Check if the Cluster is already associated to a Track.
+    isCandidateForTrack = 0x1 << 1,         ///< Check if the Cluster is a candidate for a Track
+    isSeedForDirection  = 0x1 << 2          ///< Cluster is used as seed
   };
 
   /// default constructor
@@ -32,11 +34,23 @@ class Cluster
   Cluster(const Double_t qTot, const Double_t qMax, const Float_t meanFiber, const Float_t sigmaFiber, const Double_t meanTimeStamp,
           const Double_t sigmaTimeStamp, const Double_t firstTimeStamp, const Int_t layer, const Int_t TDCID, const Short_t flags);
 
-  /// Check if the Clsuter was already associated to a Track.
+  /// Check if the Cluster was already associated to a Track.
   inline bool isUsed() const { return mFlags & usedInTrack; }
+
+  /// Check if the Cluster is a candidate for a Track.
+  inline bool isCandidate() const { return mFlags & isCandidateForTrack; }
+
+  /// Check if the Cluster is used as seed.
+  inline bool isSeed() const { return mFlags & isSeedForDirection; }
 
   /// Set the usedInTrack flag for the Tracker.
   inline void setIsUsed() { mFlags |= usedInTrack; }
+
+  /// Set the isCandidate flag for the Tracker.
+  inline void setIsCandidate() { mFlags |= isCandidateForTrack; }
+
+  /// Set the isSeedForDirection flag for the Tracker.
+  inline void setIsSeed() { mFlags |= isCandidateForTrack; }
 
   inline void setQTot           (Double_t &qTot)           { mQTot = qTot; }
   inline void setQMax           (Double_t &qMax)           { mQMax = qMax; }
@@ -72,19 +86,19 @@ class Cluster
 
  private:
 
-  std::vector<Signal>  mSignals{};       ///< holds all signals in the cluster
-  Double_t             mQTot;            ///< sum of all ToT values (ToT corresponds to charge)
-  Double_t             mQMax;            ///< largest ToT among signals in the cluster
-  Float_t              mMeanFiber;       ///< arithmetic mean of fiber numbers weighted with the ToT of the corresponding signal
-  Float_t              mSigmaFiber;      ///< standard deviation
-  Double_t             mMeanTimeStamp;   ///< arithmetic mean of time stamps weighted with the ToT of the corresponding signal
-  Double_t             mSigmaTimeStamp;  ///< standard deviation
+  std::vector<Signal>  mSignals{};           ///< holds all signals in the cluster
+  Double_t             mQTot = 0;            ///< sum of all ToT values (ToT corresponds to charge)
+  Double_t             mQMax = 0;            ///< largest ToT among signals in the cluster
+  Float_t              mMeanFiber = 0;       ///< arithmetic mean of fiber numbers weighted with the ToT of the corresponding signal
+  Float_t              mSigmaFiber = 0;      ///< standard deviation
+  Double_t             mMeanTimeStamp = 0;   ///< arithmetic mean of time stamps weighted with the ToT of the corresponding signal
+  Double_t             mSigmaTimeStamp = 0;  ///< standard deviation
   Double_t             mFirstTimeStamp = 0;  ///< earliest time stamp among signals
-  Int_t                mLayer;           ///< layer in which the cluster is located
-  Int_t                mTDCID;           ///< TDC that is connected to the layer
-  Short_t              mFlags;           ///< Associated to track or not. This might be useful for tracking.
+  Int_t                mLayer = 0;           ///< layer in which the cluster is located
+  Int_t                mTDCID = 0;           ///< TDC that is connected to the layer
+  Short_t              mFlags = 0;           ///< Associated to track or not. This might be useful for tracking.
 
-  ClassDef(Cluster,1);
+  ClassDef(Cluster,2);
 };
 
 #endif

@@ -18,15 +18,21 @@ class CTSEvent : public EventBase
   ~CTSEvent() = default;
   CTSEvent(const CTSEvent &event);
 
-  inline void setModules (std::vector<Module> &moduleVec)  { mModuleVec = moduleVec; }
+  inline void setModules(std::vector<Module> &moduleVec) { mModuleVec = moduleVec; }
+
+  inline void setNSignals(ULong_t nSignals) { mNSignals = nSignals; }
 
   std::vector<Module>&       getModules()       { return mModuleVec; }
   const std::vector<Module>& getModules() const { return mModuleVec; }
 
+  ULong_t&       getNSignals()       { return mNSignals; }
+  const ULong_t& getNSignals() const { return mNSignals; }
+
  private:
   std::vector<Module> mModuleVec;  ///< contains all fibers and signals
+  ULong_t mNSignals;               ///< number of signals in event; only counts signals with signalNr == 1
 
-  ClassDef(CTSEvent,2);
+  ClassDef(CTSEvent,3);
 };
 
 #endif

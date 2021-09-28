@@ -4,6 +4,7 @@
 #include "CTSEvent.h"
 #include "Cluster.h"
 #include <TH1.h>
+#include <TH2.h>
 #include <vector>
 
 /// Clusterer class to assign signals from CTSEvents to clusters.
@@ -24,7 +25,7 @@ class Clusterer
   /// This function loops through the signals in the given CTS Event,
   /// applies some cuts: allowed distance cut in position (fibers) and time (Work In Progress; Not Yet Implemented) 
   /// And gives back the vector of found clusters.
-  Int_t findClusters(CTSEvent& event, const ParticleType& particleType = ParticleType::Cosmic);
+  void findClusters(CTSEvent& event, const ParticleType& particleType = ParticleType::Cosmic);
 
   std::vector<Cluster>&       getClusters()       { return mClusterVec; }
   const std::vector<Cluster>& getClusters() const { return mClusterVec; }
@@ -33,14 +34,18 @@ class Clusterer
   /// Try to guess how I found out that this was needed
   inline void reset() { mClusterVec.clear(); }
 
-  TH1D* MhTimeDiff  = new TH1D("hTimeDiff","time difference of signal to closest cluster;timeDiff [ns]",500,0,50);
-  TH1D* MhSpaceDiff = new TH1D("hSpaceDiff","space difference of signal to closest cluster;spaceDiff [fiber]",320,0,32);
-  TH1D* mHnSignal   = new TH1D("hNSignal","n Signals in CLuster",20,0,20);
+  /// number of signals per event
+  /// does not count signalNr > 1
+  TH1D* hNSignalsEvent     = new TH1D("hNSignalsEvent","n Signals in Event",200,0,200);
+
+  /// number of good signals in the event
+  /// nSignals from above with reasonable ToT cuts
+  TH1D* hNGoodSignalsEvent = new TH1D("hNGoodSignalsEvent","n good Signals in Event",200,0,200);
 
  private:
-  std::vector<Cluster> mClusterVec{}; //holds clusters 
+  std::vector<Cluster> mClusterVec{}; //holds clusters
 
-  ClassDef(Clusterer,1);
+  ClassDef(Clusterer,2);
 };
 
 #endif

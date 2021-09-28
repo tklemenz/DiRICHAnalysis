@@ -52,8 +52,8 @@ class Tracker
 
   /// run the tracking
   /// @todo Properly implement tracking in second module
-  void run(CTSEventClusters& event, const ParticleType& particletype);
-  void run(std::vector<Cluster>& clusters, const ParticleType& particletype);
+  void run(CTSEventClusters& event, const ParticleType& particletype, const bool& debug);
+  void run(std::vector<Cluster>& clusters, const ParticleType& particletype, const bool& debug);
 
   std::vector<Track>&       getTracks()       { return mTrackVec; }
   const std::vector<Track>& getTracks() const { return mTrackVec; }
