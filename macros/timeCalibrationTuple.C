@@ -39,6 +39,17 @@ void timeCalibrationTuple(const char *inputFile, const char *outputFile, ULong_t
   std::vector<TH1D*> timeChannelVec120A{};
   std::vector<TH1D*> timeChannelVec120B{};
   
+  
+  //std::vector<TH2D*> tdcTimeCalibVec{};
+  std::vector<TH2D*> tdcTimeUnCalibVec{};
+  for (Int_t i=0; i<10;i++) {
+	  tdcTimeUnCalibVec.emplace_back(new TH2D(Form("hTimeUnCalib120%i",i),Form("TDC 120%i Time uncalibrated; chID; TimeDiff",i),33,0,33,2000,-10,10));
+	}
+	
+	  tdcTimeUnCalibVec.emplace_back(new TH2D(Form("hTimeUnCalib120A"),Form("TDC 120A Time uncalibrated; chID; TimeDiff"),33,0,33,2000,-10,10));
+	  tdcTimeUnCalibVec.emplace_back(new TH2D(Form("hTimeUnCalib120B"),Form("TDC 120B Time uncalibrated; chID; TimeDiff"),33,0,33,2000,-10,10));
+  
+  
   //define histograms
   for(Int_t i=0; i<32; i++) {
 	timeChannelVec1200.emplace_back(new TH1D(Form("hTime1200Ch%i",i+1),Form("TimeStamp distribution in TDC 1200 Channel %i; TimeDiff; Counts", i+1), 2000,-10,10));
@@ -54,6 +65,7 @@ void timeCalibrationTuple(const char *inputFile, const char *outputFile, ULong_t
 	timeChannelVec120A.emplace_back(new TH1D(Form("hTime120ACh%i",i+1),Form("TimeStamp distribution in TDC 120A Channel %i; TimeDiff; Counts", i+1), 2000,-10,10));
 	timeChannelVec120B.emplace_back(new TH1D(Form("hTime120BCh%i",i+1),Form("TimeStamp distribution in TDC 120B Channel %i; TimeDiff; Counts", i+1), 2000,-10,10));
 	}
+	
 	
   TFile* f = TFile::Open(inputFile);
 
@@ -83,14 +95,15 @@ void timeCalibrationTuple(const char *inputFile, const char *outputFile, ULong_t
   signals->SetBranchAddress("refTime",      &refTime);
 
   TFile *fout = new TFile(Form("%s",outputFile),"recreate");
-  TTree *tree = new TTree("dummy","RadMap data in fancy objects -> CTSEvents");
+  
 
   if ((nSignals == -1) || (nSignals > signals->GetEntries())) { nSignals = signals->GetEntries(); }
 
   printf("signals to process: %lu\t %.1f%% of the file\n", nSignals, Float_t(100*nSignals)/Float_t(signals->GetEntries()));
+  
   std::vector<Double_t> RefTimeStampVec;
   std::vector<Double_t> RefEventNrVec;
-  
+  Int_t refchID = 2, refTDC=0;
   for (ULong_t entry = 0; entry < nSignals; entry++) {
 	  signals->GetEntry(entry);
 	  if(TDC == 0 && chID == 2 && signalNr ==1) {
@@ -166,8 +179,19 @@ void timeCalibrationTuple(const char *inputFile, const char *outputFile, ULong_t
 			else if (TDC == 11) {  
 				timeChannelVec120B.at(chID-1)->Fill((timeStamp-refTime-timeRefChannel)*1e9);
 				}
-			}	
+				
+				
+		    tdcTimeUnCalibVec.at(TDC)->Fill(chID, (timeStamp-refTime-timeRefChannel)*1e9);
+			}
+			
+		 //std::cout<<tdcTimeUnCalibVec.size()<<std::endl;
+      
+	    //tdcTimeUnCalibVec.at(TDC)->Fill(chID, (timeStamp-refTime-timeRefChannel)*1e9);
+		
+			
 		}
+		//tdcTimeUnCalibVec.at(TDC)->Fill(chID, (timeStamp-refTime-timeRefChannel)*1e9);
+		//copy(tdcTimeUnCalibVec.begin(), tdcTimeUnCalibVec.end(), back_inserter(tdcTimeCalibVec));
 	
   //makes gaussian fit for the time diff
   Double_t mean            = -1;
@@ -179,21 +203,31 @@ void timeCalibrationTuple(const char *inputFile, const char *outputFile, ULong_t
   calibrationValues.open("calibrationValues.txt",std::ios::out);
   
   
-  for(Int_t i=0;i<timeChannelVec1200.size();i++) { timeChannelVec1200.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1200 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1201.size();i++) { timeChannelVec1201.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1201 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1202.size();i++) { timeChannelVec1202.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1202 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1203.size();i++) { timeChannelVec1203.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1203 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1204.size();i++) { timeChannelVec1204.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1204 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1205.size();i++) { timeChannelVec1205.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1205 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1206.size();i++) { timeChannelVec1206.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1206 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1207.size();i++) { timeChannelVec1207.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1207 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1208.size();i++) { timeChannelVec1208.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1208 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec1209.size();i++) { timeChannelVec1209.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 1209 Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec120A.size();i++) { timeChannelVec120A.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 120A Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
-  for(Int_t i=0;i<timeChannelVec120B.size();i++) { timeChannelVec120B.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); calibrationValues << Form("TDC 120B Channel %i:",i+1) << std::setw(5)<< mean << "\n";}
+  for(Int_t i=0;i<timeChannelVec1200.size();i++) { 
+	  if (i != refchID -1 ){
+		timeChannelVec1200.at(i)->Fit("fit", "R"); 
+		mean = fit->GetParameter(1); 
+	  }
+	  else {mean = 0;}
+	  if (i == 0) { calibrationValues << "\n TDC 1200 \n";}
+	  calibrationValues << mean << ", ";
+  }
+  
+  for(Int_t i=0;i<timeChannelVec1201.size();i++) { timeChannelVec1201.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1201 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1202.size();i++) { timeChannelVec1202.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1202 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1203.size();i++) { timeChannelVec1203.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1203 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1204.size();i++) { timeChannelVec1204.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1204 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1205.size();i++) { timeChannelVec1205.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1205 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1206.size();i++) { timeChannelVec1206.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1206 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1207.size();i++) { timeChannelVec1207.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1207 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1208.size();i++) { timeChannelVec1208.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1208 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec1209.size();i++) { timeChannelVec1209.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 1209 \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec120A.size();i++) { timeChannelVec120A.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 120A \n";} calibrationValues << mean << ", ";}
+  for(Int_t i=0;i<timeChannelVec120B.size();i++) { timeChannelVec120B.at(i)->Fit("fit", "R"); mean = fit->GetParameter(1); if (i == 0) { calibrationValues << "\n TDC 120B \n";} calibrationValues << mean << ", ";}
   
    
    calibrationValues.close();
+
    
   Int_t histCounter = 0;
   for(auto& hist : timeChannelVec1200) { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
@@ -209,7 +243,15 @@ void timeCalibrationTuple(const char *inputFile, const char *outputFile, ULong_t
   for(auto& hist : timeChannelVec120A) { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
   for(auto& hist : timeChannelVec120B) { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } } 
   
-  tree->Write("data");
+  //for(auto& hist : tdcTimeCalibVec)   { fout->WriteObject(hist, hist->GetName());}
+  for(auto& hist : tdcTimeUnCalibVec) { 
+	  fout->WriteObject(hist, hist->GetName());
+	  hist->GetXaxis()->SetTitleSize(0.04);
+	  hist->GetYaxis()->SetTitleSize(0.04);
+	  gPad->SetLogy();	  
+	  }
+  
+  
   fout->Close();
 
 }

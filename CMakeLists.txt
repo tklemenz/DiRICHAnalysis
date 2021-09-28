@@ -73,6 +73,8 @@ set(EXE_SRCS
     macros/convertToCTSEventsCluster.C
     macros/timeCalibrationTuple.C
     macros/convertToCTSEventsTrack.C
+    macros/plotTimeCalib.C
+    macros/fitCosmics.C
     )
 
 set(EXE_NAMES
@@ -82,6 +84,8 @@ set(EXE_NAMES
     convertToCTSEventsCluster
     timeCalibrationTuple
     convertToCTSEventsTrack
+    plotTimeCalib
+    fitCosmics
     )
 
 list(LENGTH EXE_SRCS count)
