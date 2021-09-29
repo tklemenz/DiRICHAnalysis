@@ -31,7 +31,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   TNtupleD *signals = (TNtupleD*)f->Get("Signals");
 
   Double_t eventNr(-1), chID(0), TDC(-1), layer(-1), x(-1), y(-1), signalNr(-1), timeStamp(-1), ToT(-1), padiwaConfig(-1), refTime(-1), prevEventNr(-1);
-  Int_t prevSigNr(0), prevCh(-1), firstCounter(0), secondCounter(0), signalCounter(0);
+  Int_t prevSigNr(0), prevCh(-1), firstCounter(0), secondCounter(0), signalCounter(0); calibTime(0);
 
   ULong_t nSignals = procNr;
 
@@ -71,7 +71,9 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
     }
 
     signals->GetEntry(entry);
-
+    
+    calibTime = (timeStamp-refTime)*1e9 - constants::dirichTimeCorr.at(TDC).at(chID);
+    
     if ((ULong_t(eventNr) != prevEventNr) && (prevEventNr !=1)) {
       for (auto& module : modules) {
         module.removeEmpty();
@@ -93,7 +95,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
       ToT = ToT*1e9;
     }
 
-    signal = Signal(ToT,(timeStamp-refTime)*1e9,signalNr,chID,layer,TDC,padiwaConfig);
+    signal = Signal(ToT,calibTime,signalNr,chID,layer,TDC,padiwaConfig);
 
     modules.at(mapping::getModule(padiwaConfig, TDC)).addSignal(signal);
 
