@@ -17,12 +17,12 @@
 //#include <fmt/format.h>
 //#include <boost/log/trivial.hpp>
 
-///< usage: ./fitCosmics -i inputfile -o outputfile -n numberOfEventsToBeProcessed
+///< usage: ./plotCTSEvent -i inputfile -o outputfile -n numberOfEventsToBeProcessed
 ///< n = -1 by default which means the whole file is processed
 
 extern char* optarg;
 
-void fitCosmics(const TString inputFiles, const char *outputFile, ULong_t procNr)
+void plotCTSEvents(const TString inputFiles, const char *outputFile, ULong_t procNr)
 {
 
   TChain chain("data", "data");
@@ -58,7 +58,7 @@ void fitCosmics(const TString inputFiles, const char *outputFile, ULong_t procNr
     timeLayerVec.emplace_back(new TH2D(Form("hTimeL%i",i+1),Form("TimeStamp distribution of first signals vs fiber in L%i;fiber;ToT",i+1),33,0,33,200000,0,200000));
   }
   for(Int_t i=0; i<32; i++) {
-	totFiberVec.emplace_back(new TH1D(Form("hToTF%i", i+1),Form("ToT distribustions of first Signals in Layer 1 Fiber %i;ToT;Counts", i+1),400,0,40));  
+	totFiberVec.emplace_back(new TH1D(Form("hToTF%i", i+1),Form("ToT distribustions of first Signals in Layer 1Fiber %i;ToT;Counts", i+1),400,0,40));  
   }
   
   /*========================================================
@@ -127,15 +127,7 @@ void fitCosmics(const TString inputFiles, const char *outputFile, ULong_t procNr
   Int_t histCounter = 0;
   for(auto& hist : totLayerVec)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
   for(auto& hist : timeLayerVec) { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); } }
-  for(auto& hist : totFiberVec)  { if(hist->GetEntries() != 0) { 
-	  
-	  //gPad->SetLogy();
-      hist->SetFillColor(kAzure-9);
-	  hist->GetXaxis()->SetLabelSize(0.03);
-	  hist->GetYaxis()->SetLabelSize(0.03);
-	  hist->GetXaxis()->SetTitleSize(0.04);
-	  hist->GetYaxis()->SetTitleSize(0.04);	  
-	  fout->WriteObject(hist, hist->GetName()); } }
+  for(auto& hist : totFiberVec)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); } }
 
   TCanvas *c1 = new TCanvas("cToTDists","cToTDists");
   c1->DivideSquare(histCounter);
@@ -150,18 +142,14 @@ void fitCosmics(const TString inputFiles, const char *outputFile, ULong_t procNr
   }
   
   TCanvas*c2=new TCanvas("fiberToTDists","fiberToTDists");
-  c2->DivideSquare(32);
+  c2->DivideSquare(16);
   
   Int_t padIter2 = 1;
   for(auto& hist : totFiberVec) {
-	//if(hist->GetEntries() == 0) { continue; }
+	if(hist->GetEntries() == 0) { continue; }
 	c2->cd(padIter2);
-	//gPad->SetLogy();
-	hist->SetFillColor(kAzure-9);
-	hist->GetXaxis()->SetTitleSize(0.04);
-	hist->GetYaxis()->SetTitleSize(0.04);
-	
-	hist->Draw("");
+	gPad->SetLogz();
+	hist->Draw("LF2");
 	padIter2++; 
   }
 
@@ -174,7 +162,7 @@ void fitCosmics(const TString inputFiles, const char *outputFile, ULong_t procNr
 int main(int argc, char** argv)
 {
   char    inputFile[512]="";
-  char    outputFile[512]="fitCosmics_output.root";
+  char    outputFile[512]="plotCTSEvents_output.root";
   ULong_t procNr=-1;
 
   int argsforloop;
@@ -198,9 +186,9 @@ int main(int argc, char** argv)
     }
   }
 
-  printf("\n\n%sRunning fitCosmicss%s\n\n",text::BOLD,text::RESET);
+  printf("\n\n%sRunning plotCTSEvents%s\n\n",text::BOLD,text::RESET);
   
-  fitCosmics(inputFile,outputFile,procNr);
+  plotCTSEvents(inputFile,outputFile,procNr);
 
   printf("\n\n%s%sDONE!%s\n\n",text::BOLD,text::GRN,text::RESET);
 }
