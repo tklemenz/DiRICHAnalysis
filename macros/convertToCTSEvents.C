@@ -13,6 +13,7 @@
 
 #include "CTSEvent.h"
 #include "Utility.h"
+#include "Constants.h"
 
 ///< usage: ./convertToCTSEvents -i inputfile -o outputfileName -n numberOfSignalsToBeProcessed
 ///< n = -1 by default which means the whole file is processed
@@ -30,8 +31,8 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
 
   TNtupleD *signals = (TNtupleD*)f->Get("Signals");
 
-  Double_t eventNr(-1), chID(0), TDC(-1), layer(-1), x(-1), y(-1), signalNr(-1), timeStamp(-1), ToT(-1), padiwaConfig(-1), refTime(-1), prevEventNr(-1);
-  Int_t prevSigNr(0), prevCh(-1), firstCounter(0), secondCounter(0), signalCounter(0); calibTime(0);
+  Double_t eventNr(-1), chID(0), TDC(-1), layer(-1), x(-1), y(-1), signalNr(-1), timeStamp(-1), ToT(-1), padiwaConfig(-1), refTime(-1), prevEventNr(-1), calibTime(0);
+  Int_t prevSigNr(0), prevCh(-1), firstCounter(0), secondCounter(0), signalCounter(0); 
 
   ULong_t nSignals = procNr;
 
