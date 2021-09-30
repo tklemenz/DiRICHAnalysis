@@ -55,7 +55,6 @@ void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULon
 
   printf("events to process: %lu\t %.1f%% of the file\n", nEvents, Float_t(100*nEvents)/Float_t(data->GetEntries()));
 
-
   for (ULong_t entry = 0; entry < nEvents; entry++) {
     if ((((entry+1)%1000) == 0) || (entry == (nEvents-1))) {
       printf("\rprocessing event %lu...", entry+1);
@@ -119,6 +118,7 @@ int main(int argc, char** argv)
         break;
       case 'd':
         if (std::atoi(optarg) > 0) { debugTracker = true; }
+        else if (std::atoi(optarg) == 0) { debugTracker = false; }
         else { printf("Valid debug options: '1', '0' (default)"); }
         break;
       default:

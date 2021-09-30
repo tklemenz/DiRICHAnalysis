@@ -19,7 +19,7 @@
 
 extern char* optarg;
 
-void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, ULong_t procNr)
+void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, ULong_t procNr, const bool& debugClusterer)
 {
   Int_t fullTrackCounter = 0;
   Int_t fullTracksTmp = 0;
@@ -83,7 +83,7 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
     modules       = event->getModules();
     //eventBuffer.setModules(modules);
 
-    clusterer.findClusters(*event, ParticleType::Cosmic);
+    clusterer.findClusters(*event, ParticleType::Cosmic, debugClusterer);
     clusters = clusterer.getClusters();
 
     for(auto& cluster : clusters){
@@ -149,9 +149,10 @@ int main(int argc, char** argv)
   char    inputFile[512]="";
   char    outputFile[512]="convertToCTSEventsCluster_output.root";
   ULong_t procNr=-1;
+  bool    debugClusterer = false;
 
   int argsforloop;
-  while ((argsforloop = getopt(argc, argv, "hi:o:n:")) != -1) {
+  while ((argsforloop = getopt(argc, argv, "hi:o:n:d:")) != -1) {
     switch (argsforloop) {
       case '?':
         ///TODO: write usage function
@@ -165,6 +166,11 @@ int main(int argc, char** argv)
       case 'n':
         procNr = std::atoi(optarg);
         break;
+      case 'd':
+        if (std::atoi(optarg) > 0) { debugClusterer = true; }
+        else if (std::atoi(optarg) == 0) { debugClusterer = false; }
+        else { printf("Valid debug options: '1', '0' (default)"); }
+        break;
       default:
         printf("\n\n%s%sdefault case%s\n\n",text::BOLD,text::RED,text::RESET);
         exit(EXIT_FAILURE);
@@ -173,7 +179,7 @@ int main(int argc, char** argv)
 
   printf("\n\n%sRunning convertToCTSEventsCluster%s\n\n",text::BOLD,text::RESET);
   
-  convertToCTSEventsCluster(inputFile,outputFile,procNr);
+  convertToCTSEventsCluster(inputFile,outputFile,procNr,debugClusterer);
 
   printf("\n\n%s%sDONE!%s\n\n",text::BOLD,text::GRN,text::RESET);
 }

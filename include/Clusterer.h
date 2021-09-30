@@ -25,7 +25,7 @@ class Clusterer
   /// This function loops through the signals in the given CTS Event,
   /// applies some cuts: allowed distance cut in position (fibers) and time (Work In Progress; Not Yet Implemented) 
   /// And gives back the vector of found clusters.
-  void findClusters(CTSEvent& event, const ParticleType& particleType = ParticleType::Cosmic);
+  void findClusters(CTSEvent& event, const ParticleType& particleType = ParticleType::Cosmic, const bool& debug = false);
 
   std::vector<Cluster>&       getClusters()       { return mClusterVec; }
   const std::vector<Cluster>& getClusters() const { return mClusterVec; }
@@ -44,6 +44,7 @@ class Clusterer
 
  private:
   std::vector<Cluster> mClusterVec{}; //holds clusters
+  ULong_t mEventCounter = 0;
 
   ClassDef(Clusterer,2);
 };

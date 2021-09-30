@@ -17,7 +17,7 @@ class Signal
 
   enum Flags : unsigned short {
     usedInTrack = 0x1 << 0,         ///< Check if the Signal is already associated to a Track.
-    usedInCluster = 0x1 << 0,       ///< Check if the Signal is already associated to a Cluster.
+    usedInCluster = 0x1 << 1,       ///< Check if the Signal is already associated to a Cluster.
   };
 
   /// Check if the Signal was already associated to a Track.
@@ -50,14 +50,14 @@ class Signal
 
  private:
 
-  Double_t mTot;         ///< time over threshold in seconds,        calibrated data is in ns
-  Double_t mTimeStamp;   ///< time stamp of rising edge in seconds,  calibrated data is in ns
-  Int_t    mSignalNr;    ///< nth signal in given event and channel
-  Int_t    mChID;        ///< channel number
-  Int_t    mLayer = 0;   ///< layer of the hit fiber
-  Int_t    mTDCID;       ///< TDC ID of the hit fiber
-  Int_t    mConfig;      ///< padiwa configuration
-  Short_t  mFlags;       ///< Associated to track/cluster or not. This might be useful for tracking/clustering.
+  Double_t mTot = 0;         ///< time over threshold in seconds,        calibrated data is in ns
+  Double_t mTimeStamp = 0;   ///< time stamp of rising edge in seconds,  calibrated data is in ns
+  Int_t    mSignalNr = 0;    ///< nth signal in given event and channel
+  Int_t    mChID = 0;        ///< channel number
+  Int_t    mLayer = 0;       ///< layer of the hit fiber
+  Int_t    mTDCID = 0;       ///< TDC ID of the hit fiber
+  Int_t    mConfig = 0;      ///< padiwa configuration
+  Short_t  mFlags = 0;       ///< Associated to track/cluster or not. This might be useful for tracking/clustering.
 
   ClassDef(Signal,3);
 };
