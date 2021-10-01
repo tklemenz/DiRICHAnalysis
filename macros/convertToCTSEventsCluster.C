@@ -19,11 +19,11 @@
 
 extern char* optarg;
 
+static const std::string process = "[MACRO]";
+static const Int_t timeWindow = 5; // time window for correlation plots
+
 void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, ULong_t procNr, const bool& debugClusterer)
 {
-  Int_t fullTrackCounter = 0;
-  Int_t fullTracksTmp = 0;
-
   TFile* f = TFile::Open(inputFile);
 
   if (f->IsOpen()==kFALSE){
@@ -50,20 +50,29 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
     clusterQmaxDists.emplace_back(new TH2D(Form("hToTmaxL%i",i+1),Form("max ToT distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,500,0,50));
   }
 
-  TH1D* hNSignalsCluster  = new TH1D("hNSignalsCluster","n Signals in Cluster",20,0,20);
-  TH1D* hNClusters = new TH1D("hNClusters","n Clusters in Event",20,0,20);
+  std::vector<std::vector<TH2D*>> coincidenceVecQMax{};
+  std::vector<std::vector<TH2D*>> coincidenceVecQTot{};
+  for(Int_t layer=0; layer<8; layer++) {
+    coincidenceVecQMax.emplace_back(std::vector<TH2D*>{});
+    coincidenceVecQTot.emplace_back(std::vector<TH2D*>{});
+    for(Int_t coi=0; coi<8; coi++) {
+      coincidenceVecQMax.back().emplace_back(new TH2D(Form("hCoiMaxToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i%i;max ToT L%i;max ToT L %i",layer+1, coi+1, layer+1, coi+1),500,0,50,500,0,50));
+      coincidenceVecQTot.back().emplace_back(new TH2D(Form("hCoiTotToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i%i;tot ToT L%i;tot ToT L %i",layer+1, coi+1, layer+1, coi+1),500,0,50,500,0,50));
+    }
+  }
 
-  Int_t fiberMult(0), layer(-1), x(-1), y(-1), clusterCounter(0);
+  TH1D* hNSignalsCluster  = new TH1D("hNSignalsCluster","n Signals in Cluster;n signals;counts",20,0,20);
+  TH1D* hNClusters = new TH1D("hNClusters","n Clusters in Event;n Clusters;counts",20,0,20);
+  TH1D* hQmax = new TH1D("hQmax","max Cluster ToT; max ToT [ns];counts",200,0,100);
+  TH1D* hQtot = new TH1D("hQtot","total Cluster ToT; total ToT [ns]",200,0,100);
+
+  Int_t fiberMult(0), layer(-1), x(-1), y(-1);
 
   TFile *fout = new TFile(Form("%s",outputFile),"recreate");
   TTree *treeout = new TTree("dummy","RadMap data in CTSEvents -> CTSEventClusters");
 
-  CTSEvent *event;
-  //CTSEvent eventBuffer;
-  event = new CTSEvent();
-  //eventBuffer = CTSEvent();
-  CTSEventClusters *ctsEventCluster;
-  ctsEventCluster = new CTSEventClusters();
+  CTSEvent *event = new CTSEvent();
+  CTSEventClusters *ctsEventCluster = new CTSEventClusters();
 
   data->SetBranchAddress("Events", &event);
   treeout->Branch("CTSEventsCluster","ctsEventCluster",ctsEventCluster,32000,1);
@@ -76,20 +85,31 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
       fflush(stdout);
       std::cout<<std::setw(5)<<std::setiosflags(std::ios::fixed)<<std::setprecision(1)<<" "<<(100.*(entry+1))/nEvents<<" % done\r"<<std::flush;
     }
-    clusterCounter = 0;
     data->GetEntry(entry);
     eventNr       = event->getEventNr();
     padiwaConfig  = event->getPadiwaConfig();
     modules       = event->getModules();
-    //eventBuffer.setModules(modules);
 
     clusterer.findClusters(*event, ParticleType::Cosmic, debugClusterer);
     clusters = clusterer.getClusters();
 
+    // check coincidences
+    for (auto& cluster : clusters) {
+      for (auto& other : clusters) {
+        if (std::abs(cluster.getMeanTimeStamp()-other.getMeanTimeStamp() <= timeWindow)) {
+          //printf("%s%s %sAccessing coincidence histos at Layer %d and Layer %d...%s\n", text::LBLU, process.c_str(), text::YEL, cluster.getLayer(), other.getLayer(), text::RESET);
+          coincidenceVecQMax.at(cluster.getLayer()-1).at(other.getLayer()-1)->Fill(cluster.getQMax(), other.getQMax());
+          coincidenceVecQTot.at(cluster.getLayer()-1).at(other.getLayer()-1)->Fill(cluster.getQTot(), other.getQTot());
+        }
+      }
+    }
+
     for(auto& cluster : clusters){
-      clusterQtotDists.at(cluster.getLayer()-1)->Fill(Int_t(std::round(cluster.getMeanFiber())), cluster.getQTot());
+      clusterQtotDists.at(cluster.getLayer()-1)->Fill(cluster.getMeanFiber(), cluster.getQTot());
       clusterQmaxDists.at(cluster.getLayer()-1)->Fill(Int_t(std::round(cluster.getMeanFiber())), cluster.getQMax());
       hNSignalsCluster->Fill(cluster.getNSignals());
+      hQmax->Fill(cluster.getQMax());
+      hQtot->Fill(cluster.getQTot());
     }
     hNClusters->Fill(clusters.size());
 
@@ -108,10 +128,28 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   fout->WriteObject(clusterer.hNGoodSignalsEvent, clusterer.hNGoodSignalsEvent->GetName());
   fout->WriteObject(hNClusters, hNClusters->GetName());
   fout->WriteObject(hNSignalsCluster,hNSignalsCluster->GetName());
+  fout->WriteObject(hQmax,hQmax->GetName());
+  fout->WriteObject(hQtot,hQtot->GetName());
 
   Int_t histCounter = 0;
   for(auto& hist : clusterQtotDists)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); histCounter++; } }
   for(auto& hist : clusterQmaxDists)  { if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); } }
+
+  for (auto& vec : coincidenceVecQMax) {
+    for (auto& hist : vec) {
+      if(hist->GetEntries() != 0) {
+        fout->WriteObject(hist, hist->GetName());
+      }
+    }
+  }
+
+  for (auto& vec : coincidenceVecQTot) {
+    for (auto& hist : vec) {
+      if(hist->GetEntries() != 0) {
+        fout->WriteObject(hist, hist->GetName());
+      }
+    }
+  }
 
   TCanvas *c1 = new TCanvas("ctotToTDists","ctotToTDists");
   c1->DivideSquare(histCounter);

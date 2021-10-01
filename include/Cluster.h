@@ -94,6 +94,7 @@ class Cluster
   Double_t             mMeanTimeStamp = 0;   ///< arithmetic mean of time stamps weighted with the ToT of the corresponding signal
   Double_t             mSigmaTimeStamp = 0;  ///< standard deviation
   Double_t             mFirstTimeStamp = 0;  ///< earliest time stamp among signals
+  Double_t             mQMaxTimeStamp = 0;   ///< timestamp of the largest signal
   Int_t                mLayer = 0;           ///< layer in which the cluster is located
   Int_t                mTDCID = 0;           ///< TDC that is connected to the layer
   Short_t              mFlags = 0;           ///< Associated to track or not. This might be useful for tracking.

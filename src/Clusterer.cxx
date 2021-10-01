@@ -8,10 +8,10 @@ ClassImp(Clusterer);
 
 static const std::string process = "[CLUSTERER]";
 
-static Double_t cluster_fib_range  = 2;   // The allowed range in fiber distance for cluster building
-static Double_t cluster_time_range = 2;   // The allowed time window for cluster building [ns], since the calibrated data is already in ns
+static Double_t cluster_fib_range  = 1;   // The allowed range in fiber distance for cluster building
+static Double_t cluster_time_range = 1;  // The allowed time window for cluster building [ns], since the calibrated data is already in ns
 static Double_t tot_uppercut       = 23;  // Make sure there is no total BS
-static Double_t tot_lowercut       = 8;   // Get rid of noise
+static Double_t tot_lowercut       = 6;   // Get rid of noise
 static Int_t completeBSThreshold   = 500;
 
 void Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType, const bool& debug)
@@ -35,7 +35,6 @@ void Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType, 
 
   ULong_t signalCounter     = 0;
   ULong_t goodSignalCounter = 0;
-
 
   if (particleType == ParticleType::Cosmic) {
     std::vector<std::vector<Signal>> signalsVec{};        /// intermediate storage for signals per layer
@@ -128,7 +127,7 @@ void Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType, 
         for (auto& signal : layer) {                                                       /// add fitting signals to the cluster
           if (signal.isUsedInCluster()) { continue; }
 
-          if (std::abs(mapping::getFiberNr(signal.getConfiguration(), signal.getChannelID(), signal.getTDCID()) - maxFiber) < cluster_fib_range) {
+          if (std::abs(mapping::getFiberNr(signal.getConfiguration(), signal.getChannelID(), signal.getTDCID()) - maxFiber) <= cluster_fib_range) {
             if (std::abs(signal.getTimeStamp() - maxTime) < cluster_time_range) {
               clustersVec.at(layerCounter).back().addSignal(signal);
               signal.setIsUsedInCluster();
