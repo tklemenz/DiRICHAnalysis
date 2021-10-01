@@ -73,7 +73,7 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   // for multiplicity (how many layers were hit)
   std::vector<bool> layerHit{ false, false, false, false, false, false, false, false };
   Int_t hitLayerCounter = 0;
-  TH1D* nHitLayers = new TH1D("hNHitLayers","n hit layers in Event",8,0,8);
+  TH1D* nHitLayers = new TH1D("hNHitLayers","n hit layers in Event",9,0,9);
 
   tree->Branch("Events","CTSEvent",&event,32000,1);
 
