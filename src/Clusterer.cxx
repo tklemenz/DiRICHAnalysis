@@ -9,7 +9,7 @@ ClassImp(Clusterer);
 static const std::string process = "[CLUSTERER]";
 
 static Double_t cluster_fib_range  = 1;   // The allowed range in fiber distance for cluster building
-static Double_t cluster_time_range = 1;  // The allowed time window for cluster building [ns], since the calibrated data is already in ns
+static Double_t cluster_time_range = 5;  // The allowed time window for cluster building [ns], since the calibrated data is already in ns
 static Double_t tot_uppercut       = 23;  // Make sure there is no total BS
 static Double_t tot_lowercut       = 6;   // Get rid of noise
 static Int_t completeBSThreshold   = 500;

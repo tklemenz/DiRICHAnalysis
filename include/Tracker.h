@@ -63,6 +63,7 @@ class Tracker
  private:
 
   std::vector<Track> mTrackVec{}; ///< contains all found tracks
+  ULong_t mEventCounter = 0;
 
   ClassDef(Tracker,1);
 };

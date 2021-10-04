@@ -46,18 +46,21 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   std::vector<TH2D*> clusterQtotDists{};
   std::vector<TH2D*> clusterQmaxDists{};
   for(Int_t i=0; i<16; i++) {
-    clusterQtotDists.emplace_back(new TH2D(Form("hToTtotalL%i",i+1),Form("ToT total distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,500,0,50));
-    clusterQmaxDists.emplace_back(new TH2D(Form("hToTmaxL%i",i+1),Form("max ToT distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,500,0,50));
+    clusterQtotDists.emplace_back(new TH2D(Form("hToTtotalL%i",i+1),Form("ToT total distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,200,0,50));
+    clusterQmaxDists.emplace_back(new TH2D(Form("hToTmaxL%i",i+1),Form("max ToT distribution of clusters vs fiber in L%i;fiber;ToT",i+1),33,0,33,200,0,50));
   }
 
   std::vector<std::vector<TH2D*>> coincidenceVecQMax{};
   std::vector<std::vector<TH2D*>> coincidenceVecQTot{};
+  std::vector<std::vector<TH2D*>> coincidenceVecFiber{};
   for(Int_t layer=0; layer<8; layer++) {
     coincidenceVecQMax.emplace_back(std::vector<TH2D*>{});
     coincidenceVecQTot.emplace_back(std::vector<TH2D*>{});
+    coincidenceVecFiber.emplace_back(std::vector<TH2D*>{});
     for(Int_t coi=0; coi<8; coi++) {
-      coincidenceVecQMax.back().emplace_back(new TH2D(Form("hCoiMaxToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i%i;max ToT L%i;max ToT L %i",layer+1, coi+1, layer+1, coi+1),500,0,50,500,0,50));
-      coincidenceVecQTot.back().emplace_back(new TH2D(Form("hCoiTotToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i%i;tot ToT L%i;tot ToT L %i",layer+1, coi+1, layer+1, coi+1),500,0,50,500,0,50));
+      coincidenceVecQMax.back().emplace_back(new TH2D(Form("hCoiMaxToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;max ToT L%i;max ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
+      coincidenceVecQTot.back().emplace_back(new TH2D(Form("hCoiTotToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;tot ToT L%i;tot ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
+      coincidenceVecFiber.back().emplace_back(new TH2D(Form("hCoiFiberNrL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;fiber nr L%i;tot fiber nr L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),33,0,33,33,0,33));
     }
   }
 
@@ -100,6 +103,7 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
           //printf("%s%s %sAccessing coincidence histos at Layer %d and Layer %d...%s\n", text::LBLU, process.c_str(), text::YEL, cluster.getLayer(), other.getLayer(), text::RESET);
           coincidenceVecQMax.at(cluster.getLayer()-1).at(other.getLayer()-1)->Fill(cluster.getQMax(), other.getQMax());
           coincidenceVecQTot.at(cluster.getLayer()-1).at(other.getLayer()-1)->Fill(cluster.getQTot(), other.getQTot());
+          coincidenceVecFiber.at(cluster.getLayer()-1).at(other.getLayer()-1)->Fill(cluster.getMeanFiber(), other.getMeanFiber());
         }
       }
     }
@@ -144,6 +148,14 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   }
 
   for (auto& vec : coincidenceVecQTot) {
+    for (auto& hist : vec) {
+      if(hist->GetEntries() != 0) {
+        fout->WriteObject(hist, hist->GetName());
+      }
+    }
+  }
+
+  for (auto& vec : coincidenceVecFiber) {
     for (auto& hist : vec) {
       if(hist->GetEntries() != 0) {
         fout->WriteObject(hist, hist->GetName());

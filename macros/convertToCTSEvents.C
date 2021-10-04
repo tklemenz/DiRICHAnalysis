@@ -21,6 +21,7 @@
 extern char* optarg;
 
 static const Int_t timeWindow = 5; // time window for coincidence
+static const Int_t fiberWindow = 1; // fiber window for coincidence
 
 void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t procNr)
 {
@@ -50,8 +51,9 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   signals->SetBranchAddress("padiwaConfig", &padiwaConfig);
   signals->SetBranchAddress("refTime",      &refTime);
 
-  TH1D* hNSignalsEvent  = new TH1D("hNSignalsEvent","n Signals in Event",200,0,200);
-  TH1D* hToTAll         = new TH1D("hToTAll","Overall ToT distribution",200,0,200);
+  TH1D* hNSignalsEvent    = new TH1D("hNSignalsEvent","n Signals in Event;n signals; counts", 200,0,200);
+  TH1D* hToTAll           = new TH1D("hToTAll","Overall ToT distribution;ToT;counts",200,0,200);
+  TH1D* hToTOneSigInEvent = new TH1D("hToTOneSigInEvent","ToT distribution for single signal events;ToT;counts",200,0,200);
 
   TFile *fout = new TFile(Form("%s",outputFile),"recreate");
   TTree *tree = new TTree("dummy","RadMap data in fancy objects -> CTSEvents");
@@ -63,17 +65,27 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   // for coincidence
   std::vector<Signal> signalsInEvent{};
   std::vector<std::vector<TH2D*>> coincidenceVec{};
+  std::vector<std::vector<TH2D*>> coincidenceVecFiber{};
   for(Int_t layer=0; layer<8; layer++) {
     coincidenceVec.emplace_back(std::vector<TH2D*>{});
+    coincidenceVecFiber.emplace_back(std::vector<TH2D*>{});
     for(Int_t coi=0; coi<8; coi++) {
-      coincidenceVec.back().emplace_back(new TH2D(Form("hCoiToTL%i%i",layer+1,coi+1),Form("Signal coincidence in L%i%i;ToT L%i;ToT L %i",layer+1, coi+1, layer+1, coi+1),500,0,50,500,0,50));
+      coincidenceVec.back().emplace_back(new TH2D(Form("hCoiToTL%i%i",layer+1,coi+1),Form("Signal coincidence in L%i_%i, within %d ns;ToT L%i;ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
+      coincidenceVecFiber.back().emplace_back(new TH2D(Form("hCoiFiberL%i%i",layer+1,coi+1),Form("Signal coincidence in L%i_%i, within %d ns;fiber L%i;fiber L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),33,0,33,33,0,33));
     }
   }
+
+  TH2D* hCoiToTL13fibRange = new TH2D("hCoiToTL13fibRange","Signal coincidence in L1_3 if signals in fiber range +-1;ToT L1;ToT L3",200,0,50,200,0,50);
+  TH2D* hCoiToTL35fibRange = new TH2D("hCoiToTL35fibRange","Signal coincidence in L3_5 if signals in fiber range +-1;ToT L3;ToT L5",200,0,50,200,0,50);
+  TH2D* hCoiToTL57fibRange = new TH2D("hCoiToTL57fibRange","Signal coincidence in L5_7 if signals in fiber range +-1;ToT L5;ToT L7",200,0,50,200,0,50);
+  TH2D* hCoiToTL24fibRange = new TH2D("hCoiToTL24fibRange","Signal coincidence in L2_4 if signals in fiber range +-1;ToT L2;ToT L4",200,0,50,200,0,50);
+  TH2D* hCoiToTL46fibRange = new TH2D("hCoiToTL46fibRange","Signal coincidence in L4_6 if signals in fiber range +-1;ToT L4;ToT L6",200,0,50,200,0,50);
+  TH2D* hCoiToTL68fibRange = new TH2D("hCoiToTL68fibRange","Signal coincidence in L6_8 if signals in fiber range +-1;ToT L6;ToT L8",200,0,50,200,0,50);
 
   // for multiplicity (how many layers were hit)
   std::vector<bool> layerHit{ false, false, false, false, false, false, false, false };
   Int_t hitLayerCounter = 0;
-  TH1D* nHitLayers = new TH1D("hNHitLayers","n hit layers in Event",9,0,9);
+  TH1D* nHitLayers = new TH1D("hNHitLayers","n hit layers in Event; layers with hits; counts",9,0,9);
 
   tree->Branch("Events","CTSEvent",&event,32000,1);
 
@@ -105,12 +117,44 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
         module.reset();
       }
 
+      if (signalsInEvent.size() == 1) {
+        hToTOneSigInEvent->Fill(signalsInEvent.at(0).getToT());
+      }
+
       // check coincidences
       for (auto& signal : signalsInEvent) {
+        Int_t sigLayer = signal.getLayer();
+        Float_t sigFiberNr = mapping::getFiberNr(signal.getConfiguration(), signal.getChannelID(), signal.getTDCID());
         for (auto& other : signalsInEvent) {
+          Float_t otherFiberNr = mapping::getFiberNr(other.getConfiguration(), other.getChannelID(), other.getTDCID());
           if (std::abs(signal.getTimeStamp()-other.getTimeStamp() <= timeWindow)) {
             //printf("%s%s %sAccessing coincidence histos at Layer %d and Layer %d...%s\n", text::LBLU, process.c_str(), text::YEL, cluster.getLayer(), other.getLayer(), text::RESET);
             coincidenceVec.at(signal.getLayer()-1).at(other.getLayer()-1)->Fill(signal.getToT(), other.getToT());
+            coincidenceVecFiber.at(signal.getLayer()-1).at(other.getLayer()-1)->Fill(sigFiberNr, otherFiberNr);
+            if (std::abs(sigFiberNr - otherFiberNr)>fiberWindow) { continue; }
+
+            switch(sigLayer) {
+              case 1:
+                if (other.getLayer() == 3) { hCoiToTL13fibRange->Fill(signal.getToT(), other.getToT()); }
+                break;
+              case 2:
+                if (other.getLayer() == 4) { hCoiToTL24fibRange->Fill(signal.getToT(), other.getToT()); }
+                break;
+              case 3:
+                if (other.getLayer() == 5) { hCoiToTL35fibRange->Fill(signal.getToT(), other.getToT()); }
+                break;
+              case 4:
+                if (other.getLayer() == 6) { hCoiToTL46fibRange->Fill(signal.getToT(), other.getToT()); }
+                break;
+              case 5:
+                if (other.getLayer() == 7) { hCoiToTL57fibRange->Fill(signal.getToT(), other.getToT()); }
+                break;
+              case 6:
+                if (other.getLayer() == 8) { hCoiToTL68fibRange->Fill(signal.getToT(), other.getToT()); }
+                break;
+              default:
+                break;
+            }
           }
         }
         // check n hit layers
@@ -150,11 +194,24 @@ void convertToCTSEvents(const char *inputFile, const char *outputFile, ULong_t p
   tree->Write("data");
   fout->WriteObject(hNSignalsEvent, hNSignalsEvent->GetName());
   fout->WriteObject(nHitLayers, nHitLayers->GetName());
+  fout->WriteObject(hToTOneSigInEvent, hToTOneSigInEvent->GetName());
+
   for (auto& vec : coincidenceVec) {
     for (auto& hist : vec) {
       if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); }
     }
   }
+  for (auto& vec : coincidenceVecFiber) {
+    for (auto& hist : vec) {
+      if(hist->GetEntries() != 0) { fout->WriteObject(hist, hist->GetName()); }
+    }
+  }
+  fout->WriteObject(hCoiToTL13fibRange, hCoiToTL13fibRange->GetName());
+  fout->WriteObject(hCoiToTL24fibRange, hCoiToTL24fibRange->GetName());
+  fout->WriteObject(hCoiToTL35fibRange, hCoiToTL35fibRange->GetName());
+  fout->WriteObject(hCoiToTL46fibRange, hCoiToTL46fibRange->GetName());
+  fout->WriteObject(hCoiToTL57fibRange, hCoiToTL57fibRange->GetName());
+  fout->WriteObject(hCoiToTL68fibRange, hCoiToTL68fibRange->GetName());
   fout->Close();
 
   delete event;

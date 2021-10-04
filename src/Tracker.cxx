@@ -3,6 +3,8 @@
 
 ClassImp(Tracker);
 
+static const std::string process = "[TRACKER]";
+
 const Float_t  allowedAngle = 60;  //[deg]
 const Double_t qMaxThresh   = 8;   //[ToT]
 const Double_t timeThresh   = 5;   //[ns]
@@ -73,7 +75,12 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
   bool foundEvenSeed = false; // for even layers
 
   if (particletype == ParticleType::Cosmic) {
-    if (clusters.size() <= 4) { return; }
+    if (debug) { printf("%s%s %sStart of Event %lu.%s\n",text::LBLU, process.c_str(), text::LCYN, mEventCounter, text::RESET); }
+    if (clusters.size() <= 4) {
+      if (debug) { printf("%s%s %sLess than 5 Clusters in Event.%s\n",text::LBLU, process.c_str(), text::LCYN, text::RESET); }
+      mEventCounter++;
+      return;
+    }
 
   //=============================================================================================================================================================================== START FIRST SEED
     if (clusters.front().getQMax() >= qMaxThresh) {                                              // take the first cluster in the event as seed if qMax exceeds the threshold
@@ -88,14 +95,14 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       clusters.front().setIsUsed();
 
       if(debug) {
-        if (foundEvenSeed && !foundOddSeed) { printf("%s[TRACKER]%s %s(First seed)%s Set first seed, %sEVEN%s in layer %d\n",text::LBLU, text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer); }
-        else if (foundOddSeed && !foundEvenSeed) { printf("%s[TRACKER]%s %s(First seed)%s Set first seed, %sODD%s in layer %d\n",text::LBLU, text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer); }
-        else { printf("%s[TRACKER]%s %s(First seed)%s %sNO FIRST SEED FOUND%s\n",text::LBLU, text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET); }
-        printf("%s[TRACKER] %s(First seed)%s %sSeed info:%s\n",text::LBLU, text::LCYN, text::RESET, text::LBLU, text::RESET);
-        printf("%s[TRACKER] %s(First seed)%s\tmean fiber  : %g\n",text::LBLU, text::LCYN, text::RESET, seedFiber);
-        printf("%s[TRACKER] %s(First seed)%s\ttime stamp  : %g\n",text::LBLU, text::LCYN, text::RESET, seedTime);
-        printf("%s[TRACKER] %s(First seed)%s\tlayer       : %d\n",text::LBLU, text::LCYN, text::RESET, seedLayer);
-        printf("%s[TRACKER] %s(First seed)%s\tcoordinate  : %g\n",text::LBLU, text::LCYN, text::RESET, seedCoord);
+        if (foundEvenSeed && !foundOddSeed) { printf("%s%s%s %s(First seed)%s Set first seed, %sEVEN%s in layer %d\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer); }
+        else if (foundOddSeed && !foundEvenSeed) { printf("%s%s%s %s(First seed)%s Set first seed, %sODD%s in layer %d\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer); }
+        else { printf("%s%s%s %s(First seed)%s %sNO FIRST SEED FOUND%s\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET); }
+        printf("%s%s %s(First seed)%s %sSeed info:%s\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, text::LBLU, text::RESET);
+        printf("%s%s %s(First seed)%s\tmean fiber  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedFiber);
+        printf("%s%s %s(First seed)%s\ttime stamp  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedTime);
+        printf("%s%s %s(First seed)%s\tlayer       : %d\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedLayer);
+        printf("%s%s %s(First seed)%s\tcoordinate  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedCoord);
       }
     }
 
@@ -114,15 +121,15 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       angle = std::atan(clusterDistXY/clusterDistZ)*toDeg;
 
       if(debug) {
-        printf("%s[TRACKER] %s(First seed)%s %sProcessing Cluster...%s\n",text::LBLU, text::LCYN, text::RESET, text::LBLU, text::RESET);
-        printf("%s[TRACKER] %s(First seed)%s\tmean fiber  : %g\n",text::LBLU, text::LCYN, text::RESET, clFiber);
-        printf("%s[TRACKER] %s(First seed)%s\ttime stamp  : %g\n",text::LBLU, text::LCYN, text::RESET, clTime);
-        printf("%s[TRACKER] %s(First seed)%s\tlayer       : %d\n",text::LBLU, text::LCYN, text::RESET, clLayer);
-        printf("%s[TRACKER] %s(First seed)%s\tcoordinate  : %g\n",text::LBLU, text::LCYN, text::RESET, clCoord);
-        printf("%s[TRACKER] %s(First seed)%s\tseed dist xy: %g\n",text::LBLU, text::LCYN, text::RESET, clusterDistXY);
-        printf("%s[TRACKER] %s(First seed)%s\tseed dist z : %g\n",text::LBLU, text::LCYN, text::RESET, clusterDistZ);
-        printf("%s[TRACKER] %s(First seed)%s\tseed dist t : %g\n",text::LBLU, text::LCYN, text::RESET, timeDist);
-        printf("%s[TRACKER] %s(First seed)%s\tangle       : %g\n",text::LBLU, text::LCYN, text::RESET, angle);
+        printf("%s%s %s(First seed)%s %sProcessing Cluster...%s\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, text::LBLU, text::RESET);
+        printf("%s%s %s(First seed)%s\tmean fiber  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clFiber);
+        printf("%s%s %s(First seed)%s\ttime stamp  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clTime);
+        printf("%s%s %s(First seed)%s\tlayer       : %d\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clLayer);
+        printf("%s%s %s(First seed)%s\tcoordinate  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clCoord);
+        printf("%s%s %s(First seed)%s\tseed dist xy: %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clusterDistXY);
+        printf("%s%s %s(First seed)%s\tseed dist z : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clusterDistZ);
+        printf("%s%s %s(First seed)%s\tseed dist t : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, timeDist);
+        printf("%s%s %s(First seed)%s\tangle       : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, angle);
       }
 
       if (foundOddSeed && !isEven(clLayer) && clLayer < 9) {                                  // fibers are in same direction as seed cluster, seed cluster is in layer 1
@@ -130,7 +137,7 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
           angle = angle;
           oddCounter++;
           cluster.setIsCandidate();
-          if(debug) { printf("%s[TRACKER]%s %s(First seed)%s Found odd layer cluster\n",text::LBLU,text::RESET, text::LCYN, text::RESET); }
+          if(debug) { printf("%s%s%s %s(First seed)%s Found odd layer cluster\n",text::LBLU,process.c_str(), text::RESET, text::LCYN, text::RESET); }
         }
       }
       else if (foundEvenSeed && isEven(clLayer) && clLayer < 9) {
@@ -138,25 +145,25 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
           beta = angle;
           evenCounter++;
           cluster.setIsCandidate();
-          if(debug) { printf("%s[TRACKER]%s %s(First seed)%s Found even layer cluster\n",text::LBLU,text::RESET, text::LCYN, text::RESET); }
+          if(debug) { printf("%s%s%s %s(First seed)%s Found even layer cluster\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
         }
       }
       else if (clLayer > 8) {
-        if(debug) { printf("%s[TRACKER]%s %s(First seed)%s The cluster is in the second module!\n",text::LBLU, text::RESET, text::LCYN, text::RESET); }
+        if(debug) { printf("%s%s%s %s(First seed)%s The cluster is in the second module!\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
       }
       else {
-        if(debug) { printf("%s[TRACKER]%s %s(First seed)%s No fitting cluster found\n",text::LBLU, text::RESET, text::LCYN, text::RESET); }
+        if(debug) { printf("%s%s%s %s(First seed)%s No fitting cluster found\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
       }
     }
 
-    if(debug) { printf("%s[TRACKER]%s %sFinished tracking with first seed!%s\n",text::LBLU, text::RESET, text::GRN, text::RESET); }
+    if(debug) { printf("%s%s%s %sFinished tracking with first seed!%s\n",text::LBLU, process.c_str(), text::RESET, text::GRN, text::RESET); }
 
   //=============================================================================================================================================================================== FIRST SEED DONE
 
     if(debug) {
       for ( auto& cluster : clusters ) {
         if (cluster.isCandidate()) {
-          printf("%s[TRACKER] %s[DEBUG] Cluster in layer %d is already used.%s\n",text::LBLU, text::LYEL, cluster.getLayer(), text::RESET);
+          printf("%s%s %s[INFO] Candidate in layer %d.%s\n",text::LBLU, process.c_str(), text::GRN, cluster.getLayer(), text::RESET);
         }
       }
     }
@@ -165,7 +172,7 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
 
     for ( auto& cluster : clusters ) {                                                       // loop over the rest of the clusters again to find the seed for the other direction
       if (cluster.isCandidate()) {
-        if(debug) { printf("%s[TRACKER]%s %sCluster in layer %d is already used.%s\n",text::LBLU, text::RESET, text::LRED, cluster.getLayer(), text::RESET); }
+        if(debug) { printf("%s%s%s %sSkipping used Cluster in layer %d.%s\n",text::LBLU, process.c_str(), text::RESET, text::LGRN, cluster.getLayer(), text::RESET); }
         continue;
       }
       if (cluster.getQMax() < qMaxThresh) { continue; }
@@ -183,13 +190,13 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
         cluster.setIsUsed();
 
         if(debug) {
-          printf("%s[TRACKER]%s %s(Second seed)%s Set first seed, %sODD%s in layer %d\n",text::LBLU, text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer2);
-          printf("%s[TRACKER] %s(Second seed)%s %sSeed info:%s\n",text::LBLU, text::LCYN, text::RESET, text::LBLU, text::RESET);
-          printf("%s[TRACKER] %s(Second seed)%s\tseed dist t : %g\n",text::LBLU, text::LCYN, text::RESET, seedTimeDist);
-          printf("%s[TRACKER] %s(Second seed)%s\tmean fiber  : %g\n",text::LBLU, text::LCYN, text::RESET, seedFiber2);
-          printf("%s[TRACKER] %s(Second seed)%s\ttime stamp  : %g\n",text::LBLU, text::LCYN, text::RESET, seedTime2);
-          printf("%s[TRACKER] %s(Second seed)%s\tlayer       : %d\n",text::LBLU, text::LCYN, text::RESET, seedLayer2);
-          printf("%s[TRACKER] %s(Second seed)%s\tcoordinate  : %g\n",text::LBLU, text::LCYN, text::RESET, seedCoord2);
+          printf("%s%s%s %s(Second seed)%s Set first seed, %sODD%s in layer %d\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer2);
+          printf("%s%s %s(Second seed)%s %sSeed info:%s\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, text::LBLU, text::RESET);
+          printf("%s%s %s(Second seed)%s\tseed dist t : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedTimeDist);
+          printf("%s%s %s(Second seed)%s\tmean fiber  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedFiber2);
+          printf("%s%s %s(Second seed)%s\ttime stamp  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedTime2);
+          printf("%s%s %s(Second seed)%s\tlayer       : %d\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedLayer2);
+          printf("%s%s %s(Second seed)%s\tcoordinate  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedCoord2);
         }
       }
       if (!foundEvenSeed && isEven(cluster.getLayer())) {
@@ -205,13 +212,13 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
         cluster.setIsUsed();
 
         if(debug) {
-          printf("%s[TRACKER]%s %s(Second seed)%s Set first seed, %sEVEN%s in layer %d\n",text::LBLU, text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer2);
-          printf("%s[TRACKER] %s(Second seed)%s %sSeed info:%s\n",text::LBLU, text::LCYN, text::RESET, text::LBLU, text::RESET);
-          printf("%s[TRACKER] %s(Second seed)%s\tseed dist t : %g\n",text::LBLU, text::LCYN, text::RESET, seedTimeDist);
-          printf("%s[TRACKER] %s(Second seed)%s\tmean fiber  : %g\n",text::LBLU, text::LCYN, text::RESET, seedFiber2);
-          printf("%s[TRACKER] %s(Second seed)%s\ttime stamp  : %g\n",text::LBLU, text::LCYN, text::RESET, seedTime2);
-          printf("%s[TRACKER] %s(Second seed)%s\tlayer       : %d\n",text::LBLU, text::LCYN, text::RESET, seedLayer2);
-          printf("%s[TRACKER] %s(Second seed)%s\tcoordinate  : %g\n",text::LBLU, text::LCYN, text::RESET, seedCoord2);
+          printf("%s%s%s %s(Second seed)%s Set first seed, %sEVEN%s in layer %d\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET, text::LGRN, text::RESET, seedLayer2);
+          printf("%s%s %s(Second seed)%s %sSeed info:%s\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, text::LBLU, text::RESET);
+          printf("%s%s %s(Second seed)%s\tseed dist t : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedTimeDist);
+          printf("%s%s %s(Second seed)%s\tmean fiber  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedFiber2);
+          printf("%s%s %s(Second seed)%s\ttime stamp  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedTime2);
+          printf("%s%s %s(Second seed)%s\tlayer       : %d\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedLayer2);
+          printf("%s%s %s(Second seed)%s\tcoordinate  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, seedCoord2);
         }
       }
     }
@@ -231,15 +238,15 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       angle = std::atan(clusterDistXY/clusterDistZ)*toDeg;
 
       if(debug) {
-        printf("%s[TRACKER] %s(Second seed)%s %sProcessing Cluster...%s\n",text::LBLU, text::LCYN, text::RESET, text::LBLU, text::RESET);
-        printf("%s[TRACKER] %s(Second seed)%s\tmean fiber  : %g\n",text::LBLU, text::LCYN, text::RESET, clFiber);
-        printf("%s[TRACKER] %s(Second seed)%s\ttime stamp  : %g\n",text::LBLU, text::LCYN, text::RESET, clTime);
-        printf("%s[TRACKER] %s(Second seed)%s\tlayer       : %d\n",text::LBLU, text::LCYN, text::RESET, clLayer);
-        printf("%s[TRACKER] %s(Second seed)%s\tcoordinate  : %g\n",text::LBLU, text::LCYN, text::RESET, clCoord);
-        printf("%s[TRACKER] %s(Second seed)%s\tseed dist xy: %g\n",text::LBLU, text::LCYN, text::RESET, clusterDistXY);
-        printf("%s[TRACKER] %s(Second seed)%s\tseed dist z : %g\n",text::LBLU, text::LCYN, text::RESET, clusterDistZ);
-        printf("%s[TRACKER] %s(Second seed)%s\tseed dist t : %g\n",text::LBLU, text::LCYN, text::RESET, timeDist);
-        printf("%s[TRACKER] %s(Second seed)%s\tangle       : %g\n",text::LBLU, text::LCYN, text::RESET, angle);
+        printf("%s%s %s(Second seed)%s %sProcessing Cluster...%s\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, text::LBLU, text::RESET);
+        printf("%s%s %s(Second seed)%s\tmean fiber  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clFiber);
+        printf("%s%s %s(Second seed)%s\ttime stamp  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clTime);
+        printf("%s%s %s(Second seed)%s\tlayer       : %d\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clLayer);
+        printf("%s%s %s(Second seed)%s\tcoordinate  : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clCoord);
+        printf("%s%s %s(Second seed)%s\tseed dist xy: %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clusterDistXY);
+        printf("%s%s %s(Second seed)%s\tseed dist z : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, clusterDistZ);
+        printf("%s%s %s(Second seed)%s\tseed dist t : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, timeDist);
+        printf("%s%s %s(Second seed)%s\tangle       : %g\n",text::LBLU, process.c_str(), text::LCYN, text::RESET, angle);
       }
 
       if (foundOddSeed && !isEven(clLayer) && clLayer < 9) {                                 // fibers are in same direction as seed cluster, seed cluster is in layer 1
@@ -247,7 +254,7 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
           alpha = angle;
           oddCounter++;
           cluster.setIsCandidate();
-          if(debug) { printf("%s[TRACKER]%s %s(Second seed)%s Found odd layer cluster\n",text::LBLU,text::RESET, text::LCYN, text::RESET); }
+          if(debug) { printf("%s%s%s %s(Second seed)%s Found odd layer cluster\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
         }
       }
       else if (foundEvenSeed && isEven(clLayer) && clLayer < 9) {
@@ -255,18 +262,18 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
           beta = angle;
           evenCounter++;
           cluster.setIsCandidate();
-          if(debug) { printf("%s[TRACKER]%s %s(Second seed)%s Found even layer cluster\n",text::LBLU,text::RESET, text::LCYN, text::RESET); }
+          if(debug) { printf("%s%s%s %s(Second seed)%s Found even layer cluster\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
         }
       }
       else if (clLayer > 8) {
-        if(debug) { printf("%s[TRACKER]%s %s(Second seed)%s The cluster is in the second module!\n",text::LBLU, text::RESET, text::LCYN, text::RESET); }
+        if(debug) { printf("%s%s%s %s(Second seed)%s The cluster is in the second module!\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
       }
       else {
-        if(debug) { printf("%s[TRACKER]%s %s(Second seed)%s No fitting cluster found\n",text::LBLU, text::RESET, text::LCYN, text::RESET); }
+        if(debug) { printf("%s%s%s %s(Second seed)%s No fitting cluster found\n",text::LBLU, process.c_str(), text::RESET, text::LCYN, text::RESET); }
       }
     }
 
-    if(debug) { printf("%s[TRACKER]%s %sFinished tracking with second seed!%s\n",text::LBLU, text::RESET, text::GRN, text::RESET); }
+    if(debug) { printf("%s%s%s %sFinished tracking with second seed!%s\n",text::LBLU, process.c_str(), text::RESET, text::GRN, text::RESET); }
 
   //=============================================================================================================================================================================== SECOND SEED DONE
 
@@ -285,7 +292,7 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
     isEven(seedLayer2) ? yVertex = seedFiber2 : xVertex = seedFiber2;
 
     if (xVertex == -1 || yVertex == -1) {
-      if(debug) { printf("%s[TRACKER] %sBoth seeds are in the same direction!!%s\n",text::LBLU, text::LRED, text::RESET); }
+      if(debug) { printf("%s%s %sBoth seeds are in the same direction!!%s\n",text::LBLU, process.c_str(), text::LRED, text::RESET); }
       return;
     }
 
@@ -304,7 +311,7 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
 
     for (auto& cluster : candidates) {
       if (isEven(cluster.getLayer()) || cluster.isSeed()) { continue; }
-      printf("%s[TRACKER] %s[DEBUG] Cluster in layer %d. Should be odd!%s\n",text::LBLU, text::LYEL, cluster.getLayer(), text::RESET);
+      printf("%s%s %s[INFO] Cluster in layer %d. Should be odd!%s\n",text::LBLU, process.c_str(), text::LYEL, cluster.getLayer(), text::RESET);
       clFiber = cluster.getMeanFiber();
       clLayer = cluster.getLayer();
       clCoord = mapping::getCoord(clFiber, clLayer);
@@ -312,8 +319,8 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       clusterDistXY = std::abs(clCoord - tmpSeedCoord);                                          // distance of clusters in module plane
       clusterDistZ  = 2*(clLayer-tmpSeedLayer);                                                  // distance of clusters in z-direction
 
-      printf("%s[TRACKER]%s cl dist xy : %g\n",text::LBLU, text::RESET, clusterDistXY);
-      printf("%s[TRACKER]%s cl dist z  : %g\n",text::LBLU, text::RESET, clusterDistZ);
+      printf("%s%s%s cl dist xy : %g\n",text::LBLU, process.c_str(), text::RESET, clusterDistXY);
+      printf("%s%s%s cl dist z  : %g\n",text::LBLU, process.c_str(), text::RESET, clusterDistZ);
 
       angle = std::atan(clusterDistXY/clusterDistZ)*toDeg;
       angles.emplace_back(angle);
@@ -325,13 +332,13 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       tmpSum += ((angle-meanAngle)*(angle-meanAngle));
     }
     varAnglesAlpha = tmpSum/(angles.size()-1);
-    /*if(debug) { */printf("%s[TRACKER]%s VAR alpha: %g\n",text::LBLU, text::RESET, varAnglesAlpha);// }
-    printf("%s[TRACKER]%s Sum angles   : %g\n",text::LBLU, text::RESET, sumAngles);
-    printf("%s[TRACKER]%s nAngles      : %lu\n",text::LBLU, text::RESET, angles.size());
+    /*if(debug) { */printf("%s%s%s VAR alpha: %g\n",text::LBLU, process.c_str(), text::RESET, varAnglesAlpha);// }
+    printf("%s%s%s Sum angles   : %g\n",text::LBLU, process.c_str(), text::RESET, sumAngles);
+    printf("%s%s%s nAngles      : %lu\n",text::LBLU, process.c_str(), text::RESET, angles.size());
     for (auto& angle : angles) {
-      printf("%s[TRACKER]%s angle        : %g\n",text::LBLU, text::RESET, angle);
+      printf("%s%s%s angle        : %g\n",text::LBLU, process.c_str(), text::RESET, angle);
     }
-    printf("%s[TRACKER]%s mean diff sum: %g\n",text::LBLU, text::RESET, tmpSum);
+    printf("%s%s%s mean diff sum: %g\n",text::LBLU, process.c_str(), text::RESET, tmpSum);
 
     //-----------------------------------------------------------------------------------------------------------------------------------
     angles.clear();
@@ -348,7 +355,7 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
 
     for (auto& cluster : candidates) {
       if (!isEven(cluster.getLayer()) || cluster.isSeed()) { continue; }
-      printf("%s[TRACKER] %s[DEBUG] Cluster in layer %d. Should be even!%s\n",text::LBLU, text::LYEL, cluster.getLayer(), text::RESET);
+      printf("%s%s %s[INFO] Cluster in layer %d. Should be even!%s\n",text::LBLU, process.c_str(), text::LYEL, cluster.getLayer(), text::RESET);
       clFiber = cluster.getMeanFiber();
       clLayer = cluster.getLayer();
       clCoord = mapping::getCoord(clFiber, clLayer);
@@ -356,8 +363,8 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       clusterDistXY = std::abs(clCoord - tmpSeedCoord);                                          // distance of clusters in module plane
       clusterDistZ  = 2*(clLayer-tmpSeedLayer);                                                  // distance of clusters in z-direction
 
-      printf("%s[TRACKER]%s cl dist xy : %g\n",text::LBLU, text::RESET, clusterDistXY);
-      printf("%s[TRACKER]%s cl dist z  : %g\n",text::LBLU, text::RESET, clusterDistZ);
+      printf("%s%s%s cl dist xy : %g\n",text::LBLU, process.c_str(), text::RESET, clusterDistXY);
+      printf("%s%s%s cl dist z  : %g\n",text::LBLU, process.c_str(), text::RESET, clusterDistZ);
 
       angle = std::atan(clusterDistXY/clusterDistZ)*toDeg;
       angles.emplace_back(angle);
@@ -369,13 +376,13 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
       tmpSum += ((angle-meanAngle)*(angle-meanAngle));
     }
     varAnglesBeta = tmpSum/(angles.size()-1);
-    /*if(debug) { */printf("%s[TRACKER]%s VAR beta: %g\n",text::LBLU, text::RESET, varAnglesBeta);// }
-    printf("%s[TRACKER]%s Sum angles   : %g\n",text::LBLU, text::RESET, sumAngles);
-    printf("%s[TRACKER]%s nAngles      : %lu\n",text::LBLU, text::RESET, angles.size());
+    /*if(debug) { */printf("%s%s%s VAR beta: %g\n",text::LBLU, process.c_str(), text::RESET, varAnglesBeta);// }
+    printf("%s%s%s Sum angles   : %g\n",text::LBLU, process.c_str(), text::RESET, sumAngles);
+    printf("%s%s%s nAngles      : %lu\n",text::LBLU, process.c_str(), text::RESET, angles.size());
     for (auto& angle : angles) {
-      printf("%s[TRACKER]%s angle        : %g\n",text::LBLU, text::RESET, angle);
+      printf("%s%s%s angle        : %g\n",text::LBLU, process.c_str(), text::RESET, angle);
     }
-    printf("%s[TRACKER]%s mean diff sum: %g\n",text::LBLU, text::RESET, tmpSum);
+    printf("%s%s%s mean diff sum: %g\n",text::LBLU, process.c_str(), text::RESET, tmpSum);
 
     //-----------------------------------------------------------------------------------------------------------------------------------
     //=============================================================================================================================================================================== CHECK DONE
@@ -386,8 +393,11 @@ void Tracker::run(std::vector<Cluster>& clusters, const ParticleType& particlety
   } // loop over cosmics
 
   else {
-    printf("%s[TRACKER] %sThis particle type is not implemented for the tracker!%s\n",text::LBLU, text::LRED, text::RESET);
+    printf("%s%s %sThis particle type is not implemented for the tracker!%s\n",text::LBLU, process.c_str(), text::LRED, text::RESET);
   }
+
+  if (debug) { printf("%s%s %sEnd of Event %lu.%s\n\n\n",text::LBLU, process.c_str(), text::LCYN, mEventCounter, text::RESET); }
+  mEventCounter++;
 
   if (inTrack.size() > 0) {                                                                   // Put the tracks in the member variable and clear the tmp container
     mTrackVec.emplace_back(Track(std::move(inTrack), 0, 0, std::pair<Float_t, Float_t>(0,0), ParticleType(ParticleType::Cosmic)));

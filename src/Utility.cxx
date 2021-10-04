@@ -318,9 +318,14 @@ Int_t getModule(UInt_t configuration, UInt_t tdcID)
 
 Float_t getCoord(Float_t meanFiber, Int_t layer)
 {
-  if (layer == 1 || layer == 5 || layer == 9 || layer == 13) { return 2*meanFiber; }
-  else if (layer == 3 || layer == 7 || layer == 11 || layer == 15) { return 2*meanFiber-1; }
-  else { return 2*meanFiber-1; }
+  if (layer == 1 || layer == 5 || layer == 9 || layer == 13) { return 2*meanFiber-1; }
+  else if (layer == 3 || layer == 7 || layer == 11 || layer == 15) { return 2*meanFiber; }
+  else if (layer == 2 || layer == 6 || layer == 10 || layer == 14) { return 2*meanFiber-1; }
+  else if (layer == 4 || layer == 8 || layer == 12 || layer == 16) { return 2*meanFiber; }
+  else { 
+    printf("Invalid layer number!\n");
+    return -1;
+  }
 }
 
 } /// namespace mapping
