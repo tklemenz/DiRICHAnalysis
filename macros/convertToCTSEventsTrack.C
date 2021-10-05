@@ -72,7 +72,7 @@ void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULon
     tracks = tracker.getTracks();
 
     for(auto& track : tracks){
-      printf("%s[MACRO]%s Number of clusters in track: %lu\n", text::LBLU, text::RESET, track.getClusters().size());
+      printf("%s[MACRO]%s Number of clusters in track: %lu\n\n\n", text::LBLU, text::RESET, track.getClusters().size());
     }
 
     ctsEventTracks->setTracks(tracks);
@@ -82,7 +82,6 @@ void convertToCTSEventsTrack(const char *inputFile, const char *outputFile, ULon
     treeout->Fill();
 
     tracker.reset();
-    
   } /// loop over file
 
   treeout->Write("data");

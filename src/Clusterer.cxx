@@ -99,7 +99,7 @@ void Clusterer::findClusters(CTSEvent& event, const ParticleType& particleType, 
             indexCounter++;
             continue;
           }
-          if (signal.getToT() > tot_uppercut) { 
+          if (signal.getToT() > tot_uppercut) {
             indexCounter++;
             continue; }
           if (signal.getToT() > maxToT) {
