@@ -53,14 +53,14 @@ void convertToCTSEventsCluster(const char *inputFile, const char *outputFile, UL
   std::vector<std::vector<TH2D*>> coincidenceVecQMax{};
   std::vector<std::vector<TH2D*>> coincidenceVecQTot{};
   std::vector<std::vector<TH2D*>> coincidenceVecFiber{};
-  for(Int_t layer=0; layer<8; layer++) {
+  for(Int_t layer=0; layer<16; layer++) {
     coincidenceVecQMax.emplace_back(std::vector<TH2D*>{});
     coincidenceVecQTot.emplace_back(std::vector<TH2D*>{});
     coincidenceVecFiber.emplace_back(std::vector<TH2D*>{});
-    for(Int_t coi=0; coi<8; coi++) {
-      coincidenceVecQMax.back().emplace_back(new TH2D(Form("hCoiMaxToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;max ToT L%i;max ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
-      coincidenceVecQTot.back().emplace_back(new TH2D(Form("hCoiTotToTL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;tot ToT L%i;tot ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
-      coincidenceVecFiber.back().emplace_back(new TH2D(Form("hCoiFiberNrL%i%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;fiber nr L%i;tot fiber nr L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),33,0,33,33,0,33));
+    for(Int_t coi=0; coi<16; coi++) {
+      coincidenceVecQMax.back().emplace_back(new TH2D(Form("hCoiMaxToTL%i_%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;max ToT L%i;max ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
+      coincidenceVecQTot.back().emplace_back(new TH2D(Form("hCoiTotToTL%i_%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;tot ToT L%i;tot ToT L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),200,0,50,200,0,50));
+      coincidenceVecFiber.back().emplace_back(new TH2D(Form("hCoiFiberNrL%i_%i",layer+1,coi+1),Form("Cluster coincidence in L%i_%i, within %d ns;fiber nr L%i;tot fiber nr L %i",layer+1, coi+1, timeWindow, layer+1, coi+1),33,0,33,33,0,33));
     }
   }
 

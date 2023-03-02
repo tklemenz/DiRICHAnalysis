@@ -17,7 +17,7 @@ class Signal
 
   enum Flags : unsigned short {
     usedInTrack = 0x1 << 0,         ///< Check if the Signal is already associated to a Track.
-    usedInCluster = 0x1 << 1,       ///< Check if the Signal is already associated to a Cluster.
+    usedInCluster = 0x1 << 1        ///< Check if the Signal is already associated to a Cluster.
   };
 
   /// Check if the Signal was already associated to a Track.
